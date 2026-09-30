@@ -1,5 +1,5 @@
-import micropip
-await micropip.install("scikit-learn")
+# import micropip
+# await micropip.install("scikit-learn")
 import pandas as pd
 import numpy as np
 import re
@@ -10,7 +10,7 @@ from sklearn.preprocessing import MinMaxScaler
 # =============================================================================
 # 1. LOAD CSV DIRECTLY FROM JUPYTERLITE FILES
 # =============================================================================
-df = pd.read_csv("all_games.csv")
+df = pd.read_csv("steam_games_2026.csv")
 print(f"Dataset successfully loaded! Total games before DLC filter: {len(df)}")
 
 # =============================================================================
@@ -200,7 +200,7 @@ def recommend_games_vectorized(target_title, dataframe, top_n=10):
 # 7. EXECUTION
 # =============================================================================
 user_query = input("Enter a game title: ")
-target_game, recommendations = recommend_games_vectorized(user_query, df, top_n=10)
+target_game, recommendations = recommend_games_vectorized(user_query, df, top_n=5)
 
 if target_game is not None:
     print(f"\n🎯 TARGET GAME: {target_game[title_col]}")
