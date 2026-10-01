@@ -3,7 +3,7 @@ import numpy as np
 from itertools import combinations
 
 # =============================================================================
-# 1. INPUT YOUR MODEL OUTPUTS HERE
+# 1. INPUT MODEL OUTPUTS HERE
 # =============================================================================
 model_results = {
     "Cosine_Sim": [
