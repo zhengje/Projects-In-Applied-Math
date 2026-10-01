@@ -1,0 +1,53 @@
+import pandas as pd
+import numpy as np
+from itertools import combinations
+from scipy.stats import kendalltau
+
+# Example: Outputs from your 4 models (Top 10 game titles for a user/input)
+model_results = {
+    "Cosine_Sim": ["Hades", "Dead Cells", "Hollow Knight", "Celeste", "Risk of Rain 2", "Slay the Spire", "Enter the Gungeon", "Binding of Isaac", "Katana Zero", "Spelunky 2"],
+    "KNN":        ["Hades", "Dead Cells", "Hollow Knight", "Skul", "Risk of Rain 2", "Curse of the Dead Gods", "Enter the Gungeon", "Loop Hero", "Neon Abyss", "Spelunky 2"],
+    "GNN":        ["Hades", "Hollow Knight", "Ori and the Blind Forest", "Celeste", "Risk of Rain 2", "Tunic", "Hyper Light Drifter", "Dead Cells", "Gris", "FEZ"],
+    "Matrix_Fact": ["Hades", "Terraria", "Stardew Valley", "Hollow Knight", "Dead Cells", "Celeste", "Don't Starve", "Risk of Rain 2", "Factorio", "Subnautica"]
+}
+
+# -----------------------------------------------------------------------------
+# 1. PAIRWISE JACCARD SIMILARITY (OVERLAP MATRIX)
+# -----------------------------------------------------------------------------
+def jaccard_similarity(list1, list2):
+    set1, set2 = set(list1), set(list2)
+    intersection = len(set1.intersection(set2))
+    union = len(set1.union(set2))
+    return intersection / union
+
+models = list(model_results.keys())
+overlap_matrix = pd.DataFrame(index=models, columns=models, dtype=float)
+
+for m1, m2 in combinations(models, 2):
+    score = jaccard_similarity(model_results[m1], model_results[m2])
+    overlap_matrix.loc[m1, m2] = score
+    overlap_matrix.loc[m2, m1] = score
+
+np.fill_diagonal(overlap_matrix.values, 1.0)
+
+print("--- PAIRWISE OVERLAP (JACCARD SIMILARITY) ---")
+print(overlap_matrix.round(2))
+
+# -----------------------------------------------------------------------------
+# 2. CONSENSUS ANALYSIS (ALL-MODEL AGREEMENT)
+# -----------------------------------------------------------------------------
+all_recommendations = []
+for model, games in model_results.items():
+    for rank, game in enumerate(games, start=1):
+        all_recommendations.append({"model": model, "game": game, "rank": rank})
+
+df_rec = pd.DataFrame(all_recommendations)
+
+consensus = df_rec.groupby("game").agg(
+    recommend_count=("model", "count"),
+    avg_rank=("rank", "mean"),
+    recommended_by=("model", lambda x: ", ".join(x))
+).sort_values(by=["recommend_count", "avg_rank"], ascending=[False, True])
+
+print("\n--- CONSENSUS TOP GAMES (RECOMMENDED BY MULTIPLE MODELS) ---")
+print(consensus.head(10))
