@@ -3,7 +3,7 @@ import numpy as np
 from itertools import combinations
 from scipy.stats import kendalltau
 
-# Example: Outputs from your 4 models (Top 10 game titles for a user/input)
+# Example: Outputs from the 4 models (Top 10 game titles for a user/input)
 model_results = {
     "Cosine_Sim": ["Hades", "Dead Cells", "Hollow Knight", "Celeste", "Risk of Rain 2", "Slay the Spire", "Enter the Gungeon", "Binding of Isaac", "Katana Zero", "Spelunky 2"],
     "KNN":        ["Hades", "Dead Cells", "Hollow Knight", "Skul", "Risk of Rain 2", "Curse of the Dead Gods", "Enter the Gungeon", "Loop Hero", "Neon Abyss", "Spelunky 2"],
