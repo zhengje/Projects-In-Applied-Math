@@ -1,8 +1,13 @@
 # import micropip
 # await micropip.install("scikit-learn")
+
+# =============================================================================
+# 0. IMPORT REQUIRED PACKAGES
+# =============================================================================
 import pandas as pd
 import numpy as np
 import re
+import json
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MinMaxScaler
@@ -199,17 +204,37 @@ def recommend_games_vectorized(target_title, dataframe, top_n=10):
 # =============================================================================
 # 7. EXECUTION
 # =============================================================================
-user_query = input("Enter a game title: ")
-target_game, recommendations = recommend_games_vectorized(user_query, df, top_n=5)
+# user_query = input("Enter a game title: ")
 
-if target_game is not None:
-    print(f"\n🎯 TARGET GAME: {target_game[title_col]}")
-    print(f"   Tags: {target_game.get(tag_col, 'N/A')}\n")
-    print("=" * 110)
-    print(f"{'RANK':<5} | {'GAME TITLE':<30} | {'SCORE':<8} | {'TAG SIM':<8} | {'GENRE SIM':<10} | {'RATING':<7} | {'PRICE':<7} | {'PEAK PLAYERS'}")
-    print("=" * 110)
+def return_recs(user_game):
+    target_game, recommendations = recommend_games_vectorized(user_game,df,top_n=10)
 
-    for rank, rec in enumerate(recommendations, start=1):
-        print(f"#{rank:<4} | {rec['title']:<30} | {rec['composite_score']:<8} | {rec['tag_sim']:<8} | {rec['genre_sim']:<10} | {rec['rating']}%    | ${rec['price']:<6} | {rec['peak_players']:,}")
-else:
-    print(recommendations)
+    if target_game is not None:
+        # print(f"\n🎯 TARGET GAME: {target_game[title_col]}")
+        # print(f"   Tags: {target_game.get(tag_col, 'N/A')}\n")
+        # print("=" * 110)
+        # print(f"{'RANK':<5} | {'GAME TITLE':<30} | {'SCORE':<8} | {'TAG SIM':<8} | {'GENRE SIM':<10} | {'RATING':<7} | {'PRICE':<7} | {'PEAK PLAYERS'}")
+        # print("=" * 110)
+        
+        empty = []
+
+        for rank, rec in enumerate(recommendations, start=1):
+            # print(f"#{rank:<4} | {rec['title']:<30} | {rec['composite_score']:<8} | {rec['tag_sim']:<8} | {rec['genre_sim']:<10} | {rec['rating']}%    | ${rec['price']:<6} | {rec['peak_players']:,}")
+
+            dict_to_return = {}
+
+            dict_to_return["Rank"] = rank
+            dict_to_return["Title"] = rec['title']
+            dict_to_return["Composite_Score"] = rec['composite_score']
+            dict_to_return["tag_sim"] = rec['tag_sim']
+            dict_to_return["genre_sim"] = rec['genre_sim']
+            dict_to_return["rating"] = int(rec['rating'])
+            dict_to_return["price"] = float(rec['price'])
+            dict_to_return['peak_players'] = rec['peak_players']
+            empty.append(dict_to_return)
+
+        return empty
+
+    else:
+        return empty
+         # print(recommendations)
