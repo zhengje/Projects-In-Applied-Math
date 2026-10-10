@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+/* App Header */
+#App-h1 {
+  min-height: 20vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(20px + 2vmin);
+  color: white;
+  font-family: Ubuntu;
+}
+
+/* Subsections for Different Methods */
+.main-box{
+    border:1px solid #0000;
+    margin: 20px;
+}
+.box-title{
+    background-color:#7f5e35;
+    padding:10px;
+    color: #fff7e8;
+    font-weight:600;
+    font-family: Ubuntu;
+}
+.box-content{
+    background-color: #fff7e8;
+    padding-left:10px;
+    padding-right:10px;
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+.box-msg{
+    font-weight:600;
+    font-family: Ubuntu;
+}
+
+#items{
+    border-width: 2px;
+    border-radius: 8px;
+    background-color: #cfab71;
+    padding: 5px;
+}
+
+#xbutton{
+    background-color: transparent;
+    margin-top: 10px;
+}
