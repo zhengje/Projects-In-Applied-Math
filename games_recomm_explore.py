@@ -1,4 +1,5 @@
 import pandas as pd
+import ast
 
 # Load Datasets
 game_data = pd.read_csv('combined_games_data.csv')
@@ -26,3 +27,37 @@ print(f"Filtered combined_games_data rows: {len(filtered_game_data):,}")#37,610
 
 # Save the shortened CSV back to combined_games_data.csv
 filtered_game_data.to_csv('combined_games_data.csv', index=False)
+
+#Check how many rows have no values in genre, categories and filtered tags
+columns_to_check = ['genres', 'categories', 'filtered_tags']
+for column in columns_to_check:
+    missing_count = (filtered_game_data[column].isna() |
+    filtered_game_data[column].astype(str).str.strip().isin(['','[]'])
+    )
+    missing_sum = missing_count.sum()
+    print(f"Number of rows with no values in '{column}': {missing_sum:,}")
+#missing values in genres: 909
+#missing values in categories: 13,697
+#missing values in filtered tags: 3,421
+
+#Extract unique tags
+
+'''unique_tags = set()
+
+for cell in game_data['tags'].dropna():
+    try:
+        tag_list = ast.literal_eval(cell)
+        if isinstance(tag_list, list):
+             # Clean and standardize string structure
+            cleaned_tag = [str(t).strip() for t in tag_list if t]
+            unique_tags.update(cleaned_tag)
+                   
+                    
+    except (ValueError, SyntaxError):
+        continue
+
+all_unique_tags = sorted(list(unique_tags))
+print(f"Total standardized unique tags: {len(all_unique_tags)}")
+print("All tags:",all_unique_tags)
+
+'''
