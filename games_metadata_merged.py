@@ -120,7 +120,7 @@ def parse_tag_list(val):
 
 
 #Load game dataset
-df_games = pd.read_csv("combined_games_data.csv")
+df_games = pd.read_csv("data_fixed.csv")
 
 #To store extracted columns:
 genres_list = []
@@ -153,4 +153,16 @@ df_games["genres"] = genres_list
 df_games["categories"] = categories_list
 df_games["filtered_tags"] = filtered_tags_list
 #Save new columns to games.csv
-df_games.to_csv("combined_games_data.csv", index=False)
+df_games.to_csv("data_fixed.csv", index=False)
+
+#Check how many rows have no values in genre, categories and filtered tags
+columns_to_check = ['genres', 'categories', 'filtered_tags']
+for column in columns_to_check:
+    missing_count = (df_games[column].isna() |
+    df_games[column].astype(str).str.strip().isin(['','[]'])
+    )
+    missing_sum = missing_count.sum()
+    print(f"Number of rows with no values in '{column}': {missing_sum:,}")
+#missing values in genres: 0
+#missing values in categories: 10,484
+#missing values in filtered tags: 0

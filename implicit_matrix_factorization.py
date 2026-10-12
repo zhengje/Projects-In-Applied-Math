@@ -14,7 +14,7 @@ def implicit_mf():
 
     #Load game titles from app_id
     try:
-        game_data = pd.read_csv('combined_games_data.csv')
+        game_data = pd.read_csv('data_fixed.csv')
         game_title = dict(zip(game_data['app_id'], game_data['title']))
     except Exception:
         game_title = {}
@@ -100,20 +100,20 @@ if __name__ == "__main__":
 #Output:
 '''
 Recommendations for user 51580:
- 1. DOOM Eternal                                  (App ID: 782330), Score: 0.2526
- 2. Destiny 2                                     (App ID: 1085660), Score: 0.1699
- 3. Call of Duty®: Black Ops III                  (App ID: 311210), Score: 0.1404
- 4. Deep Rock Galactic                            (App ID: 548430), Score: 0.1247
- 5. Halo: The Master Chief Collection             (App ID: 976730), Score: 0.1245
- 6. Elite Dangerous                               (App ID: 359320), Score: 0.1244
- 7. Black Mesa                                    (App ID: 362890), Score: 0.1217
- 8. Hunt: Showdown                                (App ID: 594650), Score: 0.1189
- 9. Halo Infinite                                 (App ID: 1240440), Score: 0.1132
-10. Dying Light                                   (App ID: 239140), Score: 0.1074
+ 1. DOOM Eternal                                  (App ID: 782330), Score: 0.2669
+ 2. Factorio                                      (App ID: 427520), Score: 0.2080
+ 3. Deep Rock Galactic                            (App ID: 548430), Score: 0.2044
+ 4. Halo: The Master Chief Collection             (App ID: 976730), Score: 0.1668
+ 5. Killing Floor 2                               (App ID: 232090), Score: 0.1329
+ 6. Hades                                         (App ID: 1145360), Score: 0.1257
+ 7. Call of Duty®: Black Ops III                  (App ID: 311210), Score: 0.1209
+ 8. Elite Dangerous                               (App ID: 359320), Score: 0.1137
+ 9. METAL GEAR SOLID V: THE PHANTOM PAIN          (App ID: 287700), Score: 0.1119
+10. Halo Infinite                                 (App ID: 1240440), Score: 0.1117
 Games similar to 'Dwarf Fortress' (App ID: 975370):
- 1. Soulash                                       (App ID: 1623210), Score: 0.9418
- 2. Odd Realm                                     (App ID: 688060), Score: 0.9379
- 3. Songs of Syx                                  (App ID: 1162750), Score: 0.9271
- 4. Ruinarch                                      (App ID: 909320), Score: 0.9207
- 5. Ostranauts                                    (App ID: 1022980), Score: 0.9187
+ 1. Odd Realm                                     (App ID: 688060), Score: 0.9571
+ 2. Songs of Syx                                  (App ID: 1162750), Score: 0.9431
+ 3. Ruinarch                                      (App ID: 909320), Score: 0.9417
+ 4. Soulash                                       (App ID: 1623210), Score: 0.9393
+ 5. Ostranauts                                    (App ID: 1022980), Score: 0.9309                                 (App ID: 1022980), Score: 0.9187
 '''
