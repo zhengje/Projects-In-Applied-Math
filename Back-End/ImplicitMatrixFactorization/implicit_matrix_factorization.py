@@ -81,21 +81,21 @@ if __name__ == "__main__":
     model, user_app_matrix, user_id_to_index_map, app_index_map, app_id_to_index_map, game_title = implicit_mf()
 
     # Example usage
-    recommend_games(
-        user_id=51580, 
-        model=model, 
-        user_app_matrix=user_app_matrix, 
-        user_id_to_index_map=user_id_to_index_map, 
-        app_index_map=app_index_map, 
-        game_title=game_title, 
-        num_recommendations=10)
+    # recommend_games(
+    #     user_id=51580, 
+    #     model=model, 
+    #     user_app_matrix=user_app_matrix, 
+    #     user_id_to_index_map=user_id_to_index_map, 
+    #     app_index_map=app_index_map, 
+    #     game_title=game_title, 
+    #     num_recommendations=10)
     similar_games(
         app_id=975370, 
         model=model, 
         app_id_to_index_map= app_id_to_index_map,
         app_index_map=app_index_map, 
         game_title=game_title, 
-        N=5)
+        N=10)
     
 #Output:
 '''
