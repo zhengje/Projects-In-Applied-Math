@@ -13,10 +13,16 @@
 }
 
 /* Subsections for Different Methods */
-.main-box{
+.main-box-1{
     border:1px solid #0000;
     margin: 20px;
 }
+
+.main-box-2{
+    border:1px solid #0000;
+    margin-top: 30px;
+}
+
 .box-title{
     background-color:#7f5e35;
     padding:10px;

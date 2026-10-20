@@ -100,22 +100,22 @@ const options = filterData(data)
       
       <h1 id="App-h1"> Recommender System for Popular Steam Games (2024-2026)</h1>
 
-      <div class="main-box">
+      <div class="main-box-1">
         <div class="box-title">
-          Choose from Other 2024-2026 Top Steam Games:
+          Choose from Other 2024-2026 Top Steam Game:
         </div>
         <div class="box-content">
           <input onChange={(e)=>setName(e.target.value)} placeholder="Enter Game Title..." style={{padding: 5, width: 1450}}/> 
           <button type="button" onClick={handleGetRecommendations}>Get Recommendations!</button>
       </div>
 
-      <div class="main-box">
+      <div class="main-box-2">
         <div class="box-title">
           Suggest Your own Games:
         </div>
         <div class="box-content">
-          <input placeholder="Enter Game Title..." style={{padding: 5, width: 1450}}/> 
-          <input placeholder="Choose Primary Genre..." style={{padding: 5, width: 1450}}/> 
+          <input placeholder="Enter Game Title..." style={{padding: 5, width: 1400}}/> 
+          <input placeholder="Choose Primary Genre..." style={{padding: 5, width: 1400}}/> 
       
       <div
         style={{padding: 8}}
@@ -139,7 +139,7 @@ const options = filterData(data)
       </div>
 
       {isOpen && (
-        <ul style={{ border: "1px solid gray", marginTop: 4}}>
+        <ul style={{ border: "1px solid grey", marginTop: 4}}>
           {filtered.length > 0 ? (
             filtered.map((item) => (
               <li
