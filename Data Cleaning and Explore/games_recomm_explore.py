@@ -3,12 +3,13 @@ import ast
 import numpy as np
 
 # Load Datasets
-game_data = pd.read_csv('data_fixed.csv')
-recomm_data = pd.read_csv('recommendations.csv')
+game_data = pd.read_csv('Data Cleaning and Explore/Data_Fixed.csv')
+recomm_data = pd.read_csv('Data Cleaning and Explore/recommendations.csv')
 
 # Get sets of unique IDs
 game_id = set(game_data['app_id'])
 recomm_id = set(recomm_data['app_id'])
+
 
 
 #Check how many rows have no values in genre, categories and filtered tags
@@ -20,44 +21,54 @@ for column in columns_to_check:
     missing_sum = missing_count.sum()
     print(f"Number of rows with no values in '{column}': {missing_sum:,}")
 
-#Missing values in genres: 0
-#Missing values in categories: 10,484
-#Missing values in filtered_tags: 0
+#Missing values in genres: 2
+#Missing values in categories: 10,486
+#Missing values in filtered_tags: 2
 
 
+#Remove rows with less than 10,000 user reviews
+game_data['user_reviews'] = pd.to_numeric(
+    game_data['user_reviews'],
+    errors="coerce"
+).fillna(0)
+
+game_data = game_data[
+    game_data['user_reviews'] >= 10000
+].reset_index(drop=True)
 
 #Remove rows with no values in genres and filtered tags
 game_data['filtered_tags'] = game_data['filtered_tags'].replace([''],np.nan)
 filtered_game_data = game_data.dropna(subset=['genres', 'filtered_tags'])
 print("Remaining missing values in 'genres':", game_data['genres'].isna().sum())#0
 print("Remaining missing values in 'filtered_tags':", game_data['filtered_tags'].isna().sum())#0
-print("Total remaining rows in dataset:", len(game_data)) #34477
+print("Total remaining rows in dataset:", len(game_data)) #1092
 
-
+game_id = set(game_data['app_id'])
+recomm_id = set(recomm_data['app_id'])
 # Compute intersection and unique counts directly from sets
-intersection = len(game_id.intersection(recomm_id))
+intersection = len(recomm_id.intersection(game_id))
 games_unique = len(game_id)
 recomm_unique = len(recomm_id)
 
 # Print summary
-print(f"Number of unique game IDs in game_data: {games_unique:,}")  #34,477
+print(f"Number of unique game IDs in game_data: {games_unique:,}")  #1092
 print(f"Number of unique game IDs in recommendations: {recomm_unique:,}") #37,610
-print(f"Number of intersecting game IDs: {intersection:,}") #34,477
+print(f"Number of intersecting game IDs: {intersection:,}") #1092
 
 # Filter recomm_data to only include rows with app_id present in recomm_data
 filtered_game_data = game_data[game_data['app_id'].isin(recomm_id)]
 filtered_recomm_data = recomm_data[recomm_data['app_id'].isin(game_id)]
 
 filter_recomm_unique = len(set(filtered_recomm_data['app_id']))
-print(f"Number of unique game IDs in filtered recommendations: {filter_recomm_unique:,}") #34,477
-print(f"Original recommendations rows: {len(recomm_data):,}")  #41,154,794
-print(f"Filtered recommendations rows: {len(filtered_recomm_data):,}") #40,995,212
+print(f"Number of unique game IDs in filtered recommendations: {filter_recomm_unique:,}") #1092
+print(f"Original recommendations rows: {len(recomm_data):,}")  #40,995,212
+print(f"Filtered recommendations rows: {len(filtered_recomm_data):,}") #30,888,869
 
 # Save the shortened CSV back to combined_games_data.csv
-filtered_game_data.to_csv('data_fixed.csv', index=False)
-filtered_recomm_data.to_csv('recommendations.csv', index=False)
+filtered_game_data.to_csv('Data Cleaning and Explore/Data_FixedF.csv', index=False)
+filtered_recomm_data.to_csv('Data Cleaning and Explore/recommendationsF.csv', index=False)
 
-#Extract unique tags
+#Extract unique tags for splitting tags column into categories, genre and filtered tags
 unique_tags = set()
 
 for cell in game_data['tags'].dropna():

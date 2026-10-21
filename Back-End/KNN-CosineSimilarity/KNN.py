@@ -13,7 +13,7 @@ from sklearn.neighbors import NearestNeighbors
 # 1. LOAD DATASET
 # =============================================================================
 
-df = pd.read_csv("Data_Fixed.csv")
+df = pd.read_csv("Data_FixedF.csv")
 
 print(f"Games loaded: {len(df)}")
 print("CSV Columns found:", df.columns.tolist())
@@ -71,26 +71,6 @@ df = df[
 print(f"After DLC filtering: {len(df)}")
 
 
-# =============================================================================
-# 4. MINIMUM 10,000 USER REVIEWS
-# =============================================================================
-# Games with fewer than 10,000 user reviews are excluded.
-# Filtering occurs before TF-IDF, normalization,
-# and KNN calculations.
-# =============================================================================
-
-print(f"Games before review filter: {len(df)}")
-
-df[reviews_col] = pd.to_numeric(
-    df[reviews_col],
-    errors="coerce"
-).fillna(0)
-
-df = df[
-    df[reviews_col] >= 10000
-].reset_index(drop=True)
-
-print(f"Games after 10,000-review filtering: {len(df)}")
 
 
 # =============================================================================

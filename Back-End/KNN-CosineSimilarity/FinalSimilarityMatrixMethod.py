@@ -12,7 +12,7 @@ from sklearn.preprocessing import MinMaxScaler
 # 1. LOAD DATASET
 # =============================================================================
 
-df = pd.read_csv("Data_Fixed.csv")
+df = pd.read_csv("Data_FixedF.csv")
 
 print(f"Dataset successfully loaded! Total games: {len(df)}")
 print("CSV Columns found:", df.columns.tolist())
@@ -113,28 +113,6 @@ df["rating_score"] = df[rating_col].apply(
     convert_rating
 )
 
-
-# =============================================================================
-# 5. MINIMUM USER REVIEW FILTER
-# =============================================================================
-#
-# Remove games with fewer than 10,000 user reviews.
-#
-# Filtering occurs before TF-IDF and normalization.
-# =============================================================================
-
-print(f"Games before review filter: {len(df)}")
-
-df[user_reviews_col] = pd.to_numeric(
-    df[user_reviews_col],
-    errors="coerce"
-).fillna(0)
-
-df = df[
-    df[user_reviews_col] >= 10000
-].reset_index(drop=True)
-
-print(f"Games after review filter: {len(df)}")
 
 
 # =============================================================================
