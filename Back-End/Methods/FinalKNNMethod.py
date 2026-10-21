@@ -450,14 +450,14 @@ norm_price_inv = 1.0 - normalize(
 #
 # Same weights as the previous linear similarity model:
 #
-# Tags             = 0.40
+# Tags             = 0.27
 # Genres           = 0.18
 # Categories       = 0.05
-# Filtered Tags    = 0.12
-# Rating           = 0.12
-# Positive Ratio   = 0.07
-# User Reviews     = 0.03
-# Low Price        = 0.03
+# Filtered Tags    = 0.20
+# Rating           = 0.08
+# Positive Ratio   = 0.08
+# User Reviews     = 0.13
+# Low Price        = 0.01
 #
 # TOTAL            = 1.00
 #
