@@ -659,19 +659,19 @@ def recommend_games(
     #
     # Similarity:
     #
-    # Tags             = 0.40
+    # Tags             = 0.27
     # Genres           = 0.18
     # Categories       = 0.05
-    # Filtered Tags    = 0.12
+    # Filtered Tags    = 0.20
     #
-    # Total similarity = 0.75
+    # Total similarity = 0.70
     #
     # Other:
     #
-    # Rating           = 0.12
-    # Positive Ratio   = 0.07
-    # User Reviews     = 0.03
-    # Low Price        = 0.03
+    # Rating           = 0.08
+    # Positive Ratio   = 0.08
+    # User Reviews     = 0.13
+    # Low Price        = 0.01
     #
     # TOTAL            = 1.00
     #
