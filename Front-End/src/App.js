@@ -1,49 +1,37 @@
 import './App.css';
-import { useEffect, useMemo, useRef, useState } from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 
 // filter duplicates
 function filterData(data) {
-  const options = [];
-  
-  if (!data || data.length === 0) return options;
+  if (!data || data.length === 0) return [];
 
-  for(let i = 0; i < data.length; i++) {
-    const tags = data[i]["All_Tags"];
-    if (tags) {
-      for(let j = 0; j < tags.length; j++) {
-        options.push(tags[j]);
-      }
-    }
-  }
+  const options = new Set(data.map(item => item['title']))
 
+  const filtered_names = [...options];
+  filtered_names.sort()
 
-  let s = new Set(options);
-  let filtered_options = [...s];
-
-  return filtered_options;
+  return filtered_names;
 }
 
+// Pull Recommendations from Backend
 function App() {
-  const[data, setData] = useState([{}]);
-  const[name, setName] = useState("");
-
-  useEffect(() => {
-    fetch("/game_tags").then(
-      res => res.json()
-    ).then(
-        data => {
-          setData(data)
-        }
-    )
-  }, []);
-
-const options = filterData(data)
-
+  const [data, setData] = useState([])
+  const [openModal, setOpenModal] = useState(false)
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [backendData, setBackendData] = useState([]);
 
   const ref = useRef(null);
+
+  useEffect(() => {
+    fetch("/game_names").then(
+      res => res.json()
+    ).then(data => setData(data))
+  }, []);
+const options = useMemo(() => filterData(data), [data]);
+
+// Multi-Select Search Bar for Names
 
   // click outside
   useEffect(() => {
@@ -75,15 +63,15 @@ const options = filterData(data)
     setSelected((prev) => prev.filter((i) => i !== item));
   };
 
+  // Get Reccomendations from Backend
   const handleGetRecommendations = async() => {
   try {
-    const response = await fetch("/games_steam_csv", {
+    const response = await fetch("/game_recommendations", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ 
-        title: name,
         body: selected
        }),
     });
@@ -98,48 +86,36 @@ const options = filterData(data)
   return (
     <div className="Recommender_System">
       
-      <h1 id="App-h1"> Recommender System for Popular Steam Games (2024-2026)</h1>
+      <h1 id="App-h1"> Recommender System for Popular Steam Games (Up to Oct. 2023!)</h1>
 
       <div class="main-box-1">
         <div class="box-title">
           Choose from Other 2024-2026 Top Steam Game:
         </div>
         <div class="box-content">
-          <input onChange={(e)=>setName(e.target.value)} placeholder="Enter Game Title..." style={{padding: 5, width: 1450}}/> 
-          <button type="button" onClick={handleGetRecommendations}>Get Recommendations!</button>
-      </div>
 
-      <div class="main-box-2">
-        <div class="box-title">
-          Suggest Your own Games:
-        </div>
-        <div class="box-content">
-          <input placeholder="Enter Game Title..." style={{padding: 5, width: 1400}}/> 
-          <input placeholder="Choose Primary Genre..." style={{padding: 5, width: 1400}}/> 
-      
+    {/* Multi-Select Box for Game Names*/}
+    <div ref={ref} style={{ width: 300 }}>
       <div
-        style={{padding: 8}}
+        style={{ border: "1px solid black", padding: 8 }}
         onClick={() => setIsOpen(true)}
-      > 
+      >
+        {selected.map((item) => (
+          <span key={item} style={{ marginRight: 4 }}>
+            {item}
+            <button onClick={() => handleRemove(item)}>❌</button>
+          </span>
+        ))}
 
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Choose Secondary Genres..."
+          placeholder="Search..."
         />
-       
-        <div> {selected.map((item) => (
-          <span key={item} style={{ marginRight: 4 }} id="items">
-            {item}
-            <button onClick={() => handleRemove(item)} id="xbutton">❌</button>
-          </span>
-        ))}
-        </div>
-      
       </div>
 
       {isOpen && (
-        <ul style={{ border: "1px solid grey", marginTop: 4}}>
+        <ul style={{ border: "1px solid gray", marginTop: 4 }}>
           {filtered.length > 0 ? (
             filtered.map((item) => (
               <li
@@ -155,8 +131,12 @@ const options = filterData(data)
           )}
         </ul>
       )}
-        </div>
+    </div>
+
+    {/* Button to Initiate Getting Reccomendations */}
+          <button type="button" onClick={handleGetRecommendations}>Get Recommendations!</button>
       </div>
+
     </div>
   </div>
   );

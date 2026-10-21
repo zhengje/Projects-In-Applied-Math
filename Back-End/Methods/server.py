@@ -1,49 +1,41 @@
 from flask import Flask, jsonify, request
 import pandas as pd
+import KNNTest as k
 app = Flask(__name__)
 
-def read_csv():
-    
-        arr = []
-        data = pd.DataFrame(df)
 
-        for i in range(len(data)):
-            
-            temp = {}
-            temp['Name']  = data['Name'][i]
-            temp['Primary_Genre'] = data['Primary_Genre'][i]
+# Retrieve Game Information from Database (Search Bar)
+def get_names():
+    titles = []
+    data = k.load_data()
+    df = pd.DataFrame(data)
 
-            if type(data['All_Tags'][i]) != float:
-                temp['All_Tags'] = data['All_Tags'][i].split(";")
+    for i in range(len(df)):
+        temp = {}
+        temp['Titles'] = df['title'][i]
 
-            else:
-                temp['All_Tags'] = ''
-            
-            arr.append(temp)
+        titles.append(temp)
 
-    return arr
+    return titles
 
-# Recomendation bar for popular steam games 2024-2026
-@app.route("/games_steam_csv",methods=["POST"],strict_slashes=False)
-def get_games_steam_csv():
-    tags = request.get_json()
-    names = tags.get('title', "")
-    selected_tags = tags.get('tags', [])
-    vals = sc.return_recs(names)
+# Pass Names to Front End (search Bar)
+@app.route("/game_names")
+def FE_game_names():
+    return get_names()
+
+
+# Pass User Inputs into Backend
+@app.route("/game_recommendations",methods=["POST"],strict_slashes=False)
+def get_reccomendations():
+    json_names = request.get_json()
+    names = json_names.get('body',[])
+    vals = k.retrieve_rec_data
 
     return jsonify({ 
-        "message": "Success recieved Tags",
+        "message": "Success",
         "name_recieved": names,
-        "tags_recieved": selected_tags,
         "returned_data": vals
     })
-
-
-# Potential game tags for user selection
-@app.route("/game_tags")
-def get_game_tags():
-    print(read_csv)
-    return read_csv()
 
 if __name__ == "__main__":
     app.run(debug=True)
