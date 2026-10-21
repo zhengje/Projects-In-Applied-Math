@@ -1,11 +1,12 @@
 import './App.css';
+import Modal from './Components/modal';
 import {useEffect, useMemo, useRef, useState} from "react";
 
 // filter duplicates
 function filterData(data) {
   if (!data || data.length === 0) return [];
 
-  const options = new Set(data.map(item => item['title']))
+  const options = new Set(data.map(item => item['Titles']))
 
   const filtered_names = [...options];
   filtered_names.sort()
@@ -30,6 +31,7 @@ function App() {
     ).then(data => setData(data))
   }, []);
 const options = useMemo(() => filterData(data), [data]);
+console.log(options)
 
 // Multi-Select Search Bar for Names
 
@@ -88,11 +90,11 @@ const options = useMemo(() => filterData(data), [data]);
       
       <h1 id="App-h1"> Recommender System for Popular Steam Games (Up to Oct. 2023!)</h1>
 
-      <div class="main-box-1">
-        <div class="box-title">
+      <div className="main-box-1">
+        <div className="box-title">
           Choose from Other 2024-2026 Top Steam Game:
         </div>
-        <div class="box-content">
+        <div className="box-content">
 
     {/* Multi-Select Box for Game Names*/}
     <div ref={ref} style={{ width: 300 }}>
@@ -134,9 +136,13 @@ const options = useMemo(() => filterData(data), [data]);
     </div>
 
     {/* Button to Initiate Getting Reccomendations */}
-          <button type="button" onClick={handleGetRecommendations}>Get Recommendations!</button>
+          <button className="openModalBtn" onClick={() => {
+            setOpenModal(true)
+            handleGetRecommendations()
+            console.log(backendData)
+          }}>Get KNN Recommendations</button>
+          {openModal && <Modal closeModal={setOpenModal} data={backendData['returned_data']} />}
       </div>
-
     </div>
   </div>
   );
