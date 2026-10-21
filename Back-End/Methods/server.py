@@ -1,13 +1,9 @@
 from flask import Flask, jsonify, request
 import pandas as pd
-import StarterCode as sc
 app = Flask(__name__)
 
 def read_csv():
-    with open("steam_games_2026.csv", "r") as f:
-
-        df = pd.read_csv(f, usecols=['Name', 'Primary_Genre', 'All_Tags'])
-
+    
         arr = []
         data = pd.DataFrame(df)
 

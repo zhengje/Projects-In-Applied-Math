@@ -13,7 +13,7 @@ from sklearn.neighbors import NearestNeighbors
 # 1. LOAD DATASET
 # =============================================================================
 
-df = pd.read_csv("Data_Fixed.csv")
+df = pd.read_csv("DataObjective.csv")
 
 print(f"Games loaded: {len(df)}")
 print("CSV Columns found:", df.columns.tolist())
@@ -903,24 +903,54 @@ else:
 # Smaller distance = better match.
 # =============================================================================
 
-print("\nWeighted Squared Euclidean Distance:")
+# print("\nWeighted Squared Euclidean Distance:")
 
-print(
-    "D^2 = "
-    "0.40*d_tags^2 + "
-    "0.18*d_genres^2 + "
-    "0.05*d_categories^2 + "
-    "0.12*d_filtered_tags^2 + "
-    "0.12*d_rating^2 + "
-    "0.07*d_positive^2 + "
-    "0.03*d_reviews^2 + "
-    "0.03*d_low_price^2"
-)
+# print(
+#     "D^2 = "
+#     "0.40*d_tags^2 + "
+#     "0.18*d_genres^2 + "
+#     "0.05*d_categories^2 + "
+#     "0.12*d_filtered_tags^2 + "
+#     "0.12*d_rating^2 + "
+#     "0.07*d_positive^2 + "
+#     "0.03*d_reviews^2 + "
+#     "0.03*d_low_price^2"
+# )
 
-print(
-    "\nKNN Score = 1 / (1 + D)"
-)
+# print(
+#     "\nKNN Score = 1 / (1 + D)"
+# )
 
-print(
-    "Lower Euclidean distance = stronger recommendation."
-)
+# print(
+#     "Lower Euclidean distance = stronger recommendation."
+# )
+
+def return_recs(user_game):
+    target_game, recommendations = recommend_games_knn(user_game,df,top_n=10)
+
+    if target_game is not None:
+        
+        front_array = []
+
+        for rank, rec in enumerate(recommendations, start=1):
+            # print(f"#{rank:<4} | {rec['title']:<30} | {rec['composite_score']:<8} | {rec['tag_sim']:<8} | {rec['genre_sim']:<10} | {rec['rating']}%    | ${rec['price']:<6} | {rec['peak_players']:,}")
+
+            temp = {}
+
+            temp["Rank"] = rank
+            temp["Title"] = rec['title']
+            # temp["Composite_Score"] = rec['composite_score']
+            temp["tag_sim"] = rec['tag_sim']
+            temp["genre_sim"] = rec['genre_sim']
+            temp["rating"] = rec['rating']
+            temp["price"] = rec['price']
+            # dict_to_return['peak_players'] = rec['peak_players']
+            front_array.append(temp)
+
+        return front_array
+
+    else:
+        return front_array
+         # print(recommendations)
+
+# KNN_front = return_recs(["Omori","Slime Rancher","Terraria"])
