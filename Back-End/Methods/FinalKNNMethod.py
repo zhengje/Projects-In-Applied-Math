@@ -943,13 +943,11 @@ def return_recs(user_game):
 
             temp = {}
 
-            temp["Rank"] = rank
-            temp["Title"] = rec['title']
+            temp["rank"] = rank
+            temp["title"] = rec['title']
             # temp["Composite_Score"] = rec['composite_score']
-            temp["tag_sim"] = rec['tag_sim']
-            temp["genre_sim"] = rec['genre_sim']
-            temp["rating"] = rec['rating']
             temp["price"] = rec['price']
+            temp['rating'] = rec['rating']
             # dict_to_return['peak_players'] = rec['peak_players']
             front_array.append(temp)
 

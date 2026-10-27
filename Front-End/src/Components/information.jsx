@@ -1,13 +1,13 @@
 export default function Information({ rank, title, price, rating}) {
     return (
-    <div>
+    <div id="shrink-font">
         { price > 0 ? (
         <li>
-                RANK {rank}. {title} | ${price}
+                RANK {rank}. {title} | {rating} | ${price}
         </li>
         ) : (
         <li>
-                RANK {rank}. {title} | Free
+                RANK {rank}. {title} | {rating} | Free
         </li>
         )
         }

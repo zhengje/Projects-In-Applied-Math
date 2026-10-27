@@ -16,6 +16,7 @@ function filterData(data) {
 
 // Pull Recommendations from Backend
 function App() {
+  const [header, setHeader] = useState("");
   const [data, setData] = useState([])
   const [openModal, setOpenModal] = useState(false)
   const [query, setQuery] = useState("");
@@ -68,7 +69,7 @@ console.log(options)
   // Get Reccomendations from Backend
   const handleGetRecommendations = async() => {
   try {
-    const response = await fetch("/game_recommendations", {
+    const response = await fetch("/game_KNN", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -79,6 +80,7 @@ console.log(options)
     });
 
     const data = await response.json();
+    setBackendData(data)
     console.log("Backend Data: ", data);
   } catch (error) {
     console.error("Error: ", error);
@@ -140,24 +142,27 @@ console.log(options)
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
             handleGetRecommendations()
+            setHeader("Recommendations for KNN Method")
             console.log(backendData)
           }}><span>Get KNN Recommendations!</span></button>
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
             handleGetRecommendations()
+            setHeader("Recommendations for Matrix Similarities Method")
             console.log(backendData)
           }}><span>Get Matrix Similarities Recommendations!</span></button>
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
             handleGetRecommendations()
+            setHeader("Recommendations for Implicit Matrix Method")
             console.log(backendData)
           }}><span>Get Implicit Matrix Recommendations!</span></button>
           
       </div>
     </div>
-    {openModal && <Modal closeModal={setOpenModal} data={backendData['returned_data']} />}
+    {openModal && <Modal closeModal={setOpenModal} data={backendData['returned_data']} header={header} />}
   </div>
   );
 }

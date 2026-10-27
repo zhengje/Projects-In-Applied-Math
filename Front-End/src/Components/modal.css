@@ -97,3 +97,7 @@ li {
   list-style-type: none;
   margin: 10px;
 }
+
+#shrink-font {
+  font-size: 18px;
+}

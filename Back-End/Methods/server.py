@@ -31,7 +31,7 @@ def FE_game_names():
 def get_reccomendations():
     json_names = request.get_json()
     names = json_names.get('body',[])
-    vals = KNN.retrieve_rec_data
+    vals = KNN.return_recs(names)
 
     return jsonify({ 
         "message": "Success",
