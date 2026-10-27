@@ -1,13 +1,15 @@
 from flask import Flask, jsonify, request
 import pandas as pd
-import KNNTest as k
+import FinalKNNMethod as KNN
+# import FinalSimilarityMatrixMethod as SM
+# import implicit_matrix_factorization as IMF
 app = Flask(__name__)
 
 
 # Retrieve Game Information from Database (Search Bar)
 def get_names():
     titles = []
-    data = k.load_data()
+    data = KNN.load_data()
     df = pd.DataFrame(data)
 
     for i in range(len(df)):
@@ -24,12 +26,12 @@ def FE_game_names():
     return get_names()
 
 
-# Pass User Inputs into Backend
-@app.route("/game_recommendations",methods=["POST"],strict_slashes=False)
+# Pass User Inputs into Backend (KNN)
+@app.route("/game_KNN",methods=["POST"],strict_slashes=False)
 def get_reccomendations():
     json_names = request.get_json()
     names = json_names.get('body',[])
-    vals = k.retrieve_rec_data
+    vals = KNN.retrieve_rec_data
 
     return jsonify({ 
         "message": "Success",
@@ -39,3 +41,36 @@ def get_reccomendations():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+# Pass User Inputs into Backend (Matrix Similarity)
+# @app.route("/game_MatS",methods=["POST"],strict_slashes=False)
+# def get_reccomendations():
+#     json_names = request.get_json()
+#     names = json_names.get('body',[])
+#     vals = SM.retrieve_rec_data
+
+#     return jsonify({ 
+#         "message": "Success",
+#         "name_recieved": names,
+#         "returned_data": vals
+#     })
+
+# if __name__ == "__main__":
+#     app.run(debug=True)
+
+
+# Pass User Inputs into Backend (Implicit Matrix)
+# @app.route("/game_ImpM",methods=["POST"],strict_slashes=False)
+# def get_reccomendations():
+#     json_names = request.get_json()
+#     names = json_names.get('body',[])
+#     vals = IM.retrieve_rec_data
+
+#     return jsonify({ 
+#         "message": "Success",
+#         "name_recieved": names,
+#         "returned_data": vals
+#     })
+
+# if __name__ == "__main__":
+#     app.run(debug=True)

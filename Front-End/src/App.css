@@ -8,30 +8,34 @@
   align-items: center;
   justify-content: center;
   font-size: calc(20px + 2vmin);
-  color: white;
+  color: #FDFDFD;
   font-family: Ubuntu;
+}
+
+.Recommender_System {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: baseline;
+    font-family: Ubuntu;
 }
 
 /* Subsections for Different Methods */
 .main-box-1{
-    border:1px solid #0000;
+    border:1px solid #171414;
     margin: 20px;
 }
 
-.main-box-2{
-    border:1px solid #0000;
-    margin-top: 30px;
-}
-
 .box-title{
-    background-color:#7f5e35;
+    background-color:#25374B;
     padding:10px;
-    color: #fff7e8;
+    color: #ffffff;
     font-weight:600;
     font-family: Ubuntu;
 }
 .box-content{
-    background-color: #fff7e8;
+    background-color: #dcd1e3;
     padding-left:10px;
     padding-right:10px;
     padding-bottom: 20px;
@@ -45,11 +49,44 @@
 #items{
     border-width: 2px;
     border-radius: 8px;
-    background-color: #cfab71;
+    background-color: #19AFFF;
     padding: 5px;
 }
 
 #xbutton{
     background-color: transparent;
     margin-top: 10px;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+.openModalBtn {
+    border-radius: 2px;
+    border: none;
+    padding: 1px;
+    display: inline-block;
+    cursor: pointer;
+    text-decoration: none !important;
+    color: #d2efa9 !important;
+
+    background: transparent;    text-shadow: 1px 1px 0px rgba( 0, 0, 0, 0.3 );
+}
+
+.openModalBtn > span {
+    border-radius: 2px;
+    display: block;
+
+
+    color: #fff !important;
+
+    background: #aaceff;
+    background: -webkit-linear-gradient( top, #7e98bd 5%, #283f60 95%);
+    background: linear-gradient( to bottom, #aaceff 5%, #3c6091 95%);
+
+    padding: 0 15px;
+    font-size: 15px;
+    line-height: 30px;
 }

@@ -1,4 +1,5 @@
 import Information from "./information"
+import './modal.css'
 
 export default function Modal({closeModal, data}) {
     const listItems = Array.isArray(data) ? data : []

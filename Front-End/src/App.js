@@ -92,12 +92,12 @@ console.log(options)
 
       <div className="main-box-1">
         <div className="box-title">
-          Choose from Other 2024-2026 Top Steam Game:
+          Choose from Other Top Steam Games:
         </div>
         <div className="box-content">
 
     {/* Multi-Select Box for Game Names*/}
-    <div ref={ref} style={{ width: 300 }}>
+    <div ref={ref} style={{ width: 1470 }}>
       <div
         style={{ border: "1px solid black", padding: 8 }}
         onClick={() => setIsOpen(true)}
@@ -112,7 +112,8 @@ console.log(options)
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search..."
+          placeholder="Search Games... (Click Outside to Close)"
+          style = {{ width: 1440 }}
         />
       </div>
 
@@ -135,15 +136,28 @@ console.log(options)
       )}
     </div>
 
-    {/* Button to Initiate Getting Reccomendations */}
+    {/* Buttons to Initiate Getting Reccomendations */}
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
             handleGetRecommendations()
             console.log(backendData)
-          }}>Get KNN Recommendations</button>
-          {openModal && <Modal closeModal={setOpenModal} data={backendData['returned_data']} />}
+          }}><span>Get KNN Recommendations!</span></button>
+
+          <button className="openModalBtn" onClick={() => {
+            setOpenModal(true)
+            handleGetRecommendations()
+            console.log(backendData)
+          }}><span>Get Matrix Similarities Recommendations!</span></button>
+
+          <button className="openModalBtn" onClick={() => {
+            setOpenModal(true)
+            handleGetRecommendations()
+            console.log(backendData)
+          }}><span>Get Implicit Matrix Recommendations!</span></button>
+          
       </div>
     </div>
+    {openModal && <Modal closeModal={setOpenModal} data={backendData['returned_data']} />}
   </div>
   );
 }

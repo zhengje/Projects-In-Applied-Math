@@ -8,21 +8,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import NearestNeighbors
 
-
-# =============================================================================
-# 1. LOAD DATASET
-# =============================================================================
-
-df = pd.read_csv("DataObjective.csv")
-
-print(f"Games loaded: {len(df)}")
-print("CSV Columns found:", df.columns.tolist())
-
-
-# =============================================================================
-# 2. COLUMN MAPPING
-# =============================================================================
-
+# Global variables (used everywhere in the code)
 title_col = "title"
 
 tag_col = "tags"
@@ -35,62 +21,82 @@ positive_col = "positive_ratio"
 reviews_col = "user_reviews"
 price_col = "price_final"
 
-
 # =============================================================================
-# 3. REMOVE DLC / EXPANSIONS
+# 1. LOAD DATASET
 # =============================================================================
+def load_data():
+    
+    df = pd.read_csv("Data_Objective.csv")
 
-dlc_keywords = [
-    r'\bdlc\b',
-    r'\bexpansion\b',
-    r'\bseason pass\b',
-    r'\badd-on\b',
-    r'\baddon\b',
-    r'\bcontent pack\b',
-    r'\bsoundtrack\b',
-    r'\bost\b',
-    r'\bartbook\b',
-    r'hearts of stone',
-    r'blood and wine',
-    r'shadow of erdtree',
-    r'phantom liberty'
-]
+    print(f"Games loaded: {len(df)}")
+    print("CSV Columns found:", df.columns.tolist())
 
-dlc_regex = re.compile(
-    "|".join(dlc_keywords),
-    re.IGNORECASE
-)
 
-df = df[
-    ~df[title_col].astype(str).str.contains(
-        dlc_regex,
-        na=False
+    # =============================================================================
+    # 2. COLUMN MAPPING
+    # =============================================================================
+
+
+
+    # =============================================================================
+    # 3. REMOVE DLC / EXPANSIONS
+    # =============================================================================
+
+    dlc_keywords = [
+        r'\bdlc\b',
+        r'\bexpansion\b',
+        r'\bseason pass\b',
+        r'\badd-on\b',
+        r'\baddon\b',
+        r'\bcontent pack\b',
+        r'\bsoundtrack\b',
+        r'\bost\b',
+        r'\bartbook\b',
+        r'hearts of stone',
+        r'blood and wine',
+        r'shadow of erdtree',
+        r'phantom liberty'
+    ]
+
+    dlc_regex = re.compile(
+        "|".join(dlc_keywords),
+        re.IGNORECASE
     )
-].reset_index(drop=True)
 
-print(f"After DLC filtering: {len(df)}")
+    df = df[
+        ~df[title_col].astype(str).str.contains(
+            dlc_regex,
+            na=False
+        )
+    ].reset_index(drop=True)
+
+    print(f"After DLC filtering: {len(df)}")
 
 
-# =============================================================================
-# 4. MINIMUM 10,000 USER REVIEWS
-# =============================================================================
-# Games with fewer than 10,000 user reviews are excluded.
-# Filtering occurs before TF-IDF, normalization,
-# and KNN calculations.
-# =============================================================================
+    # =============================================================================
+    # 4. MINIMUM 10,000 USER REVIEWS
+    # =============================================================================
+    # Games with fewer than 10,000 user reviews are excluded.
+    # Filtering occurs before TF-IDF, normalization,
+    # and KNN calculations.
+    # =============================================================================
 
-print(f"Games before review filter: {len(df)}")
+    print(f"Games before review filter: {len(df)}")
 
-df[reviews_col] = pd.to_numeric(
-    df[reviews_col],
-    errors="coerce"
-).fillna(0)
+    df[reviews_col] = pd.to_numeric(
+        df[reviews_col],
+        errors="coerce"
+    ).fillna(0)
 
-df = df[
-    df[reviews_col] >= 10000
-].reset_index(drop=True)
+    df = df[
+        df[reviews_col] >= 10000
+    ].reset_index(drop=True)
 
-print(f"Games after 10,000-review filtering: {len(df)}")
+    print(f"Games after 10,000-review filtering: {len(df)}")
+
+    return df
+
+df = load_data()
 
 
 # =============================================================================
