@@ -126,7 +126,7 @@ console.log(options)
         onClick={() => setIsOpen(true)}
       >
         {selected.map((item) => (
-          <span key={item} style={{ marginRight: 4 }}>
+          <span key={item} style={{ marginRight: 4, color: "#ffff", borderStyle: "inset", borderColor: "#717072", borderRadius: "5px", marginRight: "10px", marginBottom: "20px", padding: "6px"}}>
             {item}
             <button onClick={() => handleRemove(item)}>❌</button>
           </span>
@@ -136,18 +136,18 @@ console.log(options)
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search Games... (Click Outside to Close)"
-          style = {{ width: 1440 }}
+          style = {{ width: 1440, backgroundColor: "#37414f", color: "#ffff", fontStyle: "italic", marginTop: "10px" }}
         />
       </div>
 
       {isOpen && (
-        <ul style={{ border: "1px solid gray", marginTop: 4 }}>
+        <ul style={{ border: "1px solid gray", marginTop: 4,  maxHeight: "375px", overflowY: 'auto' }}>
           {filtered.length > 0 ? (
             filtered.map((item) => (
               <li
                 key={item}
                 onClick={() => handleSelect(item)}
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer", color: "#c4c3c0"}}
               >
                 {item}
               </li>

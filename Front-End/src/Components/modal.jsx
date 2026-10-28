@@ -16,9 +16,9 @@ export default function Modal({closeModal, data, header}) {
                     <u1>
                     {listItems.map((item, index) => (
                         <Information id='list-div'
-                        key={item.Title || index}
+                        key={item.title || index}
                         rank={item.rank}
-                        title={item.Title}
+                        title={item.title}
                         price={item.price}
                         rating={item.rating}
                         // genres={}

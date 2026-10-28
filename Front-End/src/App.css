@@ -2,13 +2,13 @@
 
 /* App Header */
 #App-h1 {
-  min-height: 20vh;
+  min-height: 15vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(20px + 2vmin);
-  color: #FDFDFD;
+  color: #c4c3c0;
   font-family: Ubuntu;
 }
 
@@ -31,11 +31,12 @@
     background-color:#25374B;
     padding:10px;
     color: #ffffff;
-    font-weight:600;
+    font-weight:bold;
     font-family: Ubuntu;
+    font-size: 25px;
 }
 .box-content{
-    background-color: #dcd1e3;
+    background-color: #232d3f;
     padding-left:10px;
     padding-right:10px;
     padding-bottom: 20px;
@@ -78,6 +79,9 @@ body {
 .openModalBtn > span {
     border-radius: 2px;
     display: block;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 15px;
 
 
     color: #fff !important;
@@ -86,7 +90,8 @@ body {
     background: -webkit-linear-gradient( top, #7e98bd 5%, #283f60 95%);
     background: linear-gradient( to bottom, #aaceff 5%, #3c6091 95%);
 
-    padding: 0 15px;
+    padding: 15px;
     font-size: 15px;
     line-height: 30px;
+
 }
