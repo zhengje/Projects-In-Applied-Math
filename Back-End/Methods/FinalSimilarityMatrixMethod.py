@@ -921,7 +921,7 @@ def recommend_games(
 
     #     print("\n" + recommendations)
 
-def return_recs_sim(games):
+def return_recs_SM(games):
     return_arr = []
 
     if len(games) == 0:

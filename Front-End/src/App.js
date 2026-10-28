@@ -126,7 +126,7 @@ console.log(options)
         onClick={() => setIsOpen(true)}
       >
         {selected.map((item) => (
-          <span key={item} style={{ marginRight: 4, color: "#ffff", borderStyle: "inset", borderColor: "#717072", borderRadius: "5px", marginRight: "10px", marginBottom: "20px", padding: "6px"}}>
+          <span key={item} style={{ color: "#ffff", borderStyle: "inset", borderColor: "#717072", borderRadius: "5px", marginRight: "10px", marginBottom: "20px", padding: "6px"}}>
             {item}
             <button onClick={() => handleRemove(item)}>❌</button>
           </span>

@@ -27,7 +27,7 @@ def FE_game_names():
 
 # Pass User Inputs into Backend (KNN)
 @app.route("/game_KNN",methods=["POST"],strict_slashes=False)
-def get_reccomendations():
+def get_reccomendations_knn():
     json_names = request.get_json()
     names = json_names.get('body',[])
     vals = KNN.return_recs_KNN(names)
@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
 # Pass User Inputs into Backend (Matrix Similarity)
 @app.route("/game_MatSim",methods=["POST"],strict_slashes=False)
-def get_reccomendations():
+def get_reccomendations_msim():
     json_names = request.get_json()
     names = json_names.get('body',[])
     vals = SM.return_recs_SM(names)
