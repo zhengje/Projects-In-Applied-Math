@@ -66,10 +66,31 @@ console.log(options)
     setSelected((prev) => prev.filter((i) => i !== item));
   };
 
-  // Get Reccomendations from Backend
-  const handleGetRecommendations = async() => {
+  // Get Reccomendations from Backend (KNN)
+  const handleGetRecommendationsKNN = async() => {
   try {
     const response = await fetch("/game_KNN", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ 
+        body: selected
+       }),
+    });
+
+    const data = await response.json();
+    setBackendData(data)
+    console.log("Backend Data: ", data);
+  } catch (error) {
+    console.error("Error: ", error);
+  }
+  }
+
+    // Get Reccomendations from Backend (Similar Matrices)
+  const handleGetRecommendationsMatrixSim = async() => {
+  try {
+    const response = await fetch("/game_MatSim", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -141,21 +162,21 @@ console.log(options)
     {/* Buttons to Initiate Getting Reccomendations */}
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendations()
+            handleGetRecommendationsKNN()
             setHeader("Recommendations for KNN Method")
             console.log(backendData)
           }}><span>Get KNN Recommendations!</span></button>
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendations()
+            handleGetRecommendationsMatrixSim()
             setHeader("Recommendations for Matrix Similarities Method")
             console.log(backendData)
           }}><span>Get Matrix Similarities Recommendations!</span></button>
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendations()
+            handleGetRecommendationsKNN()
             setHeader("Recommendations for Implicit Matrix Method")
             console.log(backendData)
           }}><span>Get Implicit Matrix Recommendations!</span></button>

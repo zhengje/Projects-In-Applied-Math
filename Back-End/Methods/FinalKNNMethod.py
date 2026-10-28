@@ -774,120 +774,120 @@ def recommend_games_knn(
 # 13. USER INPUT: UNLIMITED GAMES
 # =============================================================================
 
-print(
-    "\nEnter as many games as you want to create a combined "
-    "KNN recommendation profile."
-)
+# print(
+#     "\nEnter as many games as you want to create a combined "
+#     "KNN recommendation profile."
+# )
 
-print("Press ENTER on a blank line when finished.\n")
+# print("Press ENTER on a blank line when finished.\n")
 
-target_titles = []
+# target_titles = []
 
-while True:
+# while True:
 
-    title = input(
-        f"Enter game {len(target_titles) + 1}: "
-    ).strip()
+#     title = input(
+#         f"Enter game {len(target_titles) + 1}: "
+#     ).strip()
 
-    if not title:
+#     if not title:
 
-        if target_titles:
-            break
+#         if target_titles:
+#             break
 
-        print("Please enter at least one game.")
-        continue
+#         print("Please enter at least one game.")
+#         continue
 
-    if title.casefold() in {
-        x.casefold() for x in target_titles
-    }:
+#     if title.casefold() in {
+#         x.casefold() for x in target_titles
+#     }:
 
-        print("Game already entered.")
-        continue
+#         print("Game already entered.")
+#         continue
 
-    target_titles.append(title)
+#     target_titles.append(title)
 
 
 # =============================================================================
 # 14. RUN RECOMMENDER
 # =============================================================================
 
-target_games, recommendations = recommend_games_knn(
-    target_titles,
-    df,
-    top_n=10
-)
+# target_games, recommendations = recommend_games_knn(
+#     target_titles,
+#     df,
+#     top_n=10
+# )
 
 
 # =============================================================================
 # 15. DISPLAY RESULTS
 # =============================================================================
 
-if target_games is None:
+# if target_games is None:
 
-    print(recommendations)
+#     print(recommendations)
 
-else:
+# else:
 
-    print("\n" + "=" * 145)
+#     print("\n" + "=" * 145)
 
-    print(
-        "MULTI-GAME EUCLIDEAN KNN RECOMMENDATIONS"
-    )
+#     print(
+#         "MULTI-GAME EUCLIDEAN KNN RECOMMENDATIONS"
+#     )
 
-    print("=" * 145)
+#     print("=" * 145)
 
-    print("\nSelected Games:")
+#     print("\nSelected Games:")
 
-    for i, game in enumerate(
-        target_games,
-        start=1
-    ):
+#     for i, game in enumerate(
+#         target_games,
+#         start=1
+#     ):
 
-        print(
-            f"{i}. {game[title_col]}"
-        )
+#         print(
+#             f"{i}. {game[title_col]}"
+#         )
 
-    print(
-        "\nLower Euclidean distance = better match."
-    )
+#     print(
+#         "\nLower Euclidean distance = better match."
+#     )
 
-    print(
-        "Only games with at least 10,000 user reviews "
-        "are included."
-    )
+#     print(
+#         "Only games with at least 10,000 user reviews "
+#         "are included."
+#     )
 
-    print("\n" + "=" * 145)
+#     print("\n" + "=" * 145)
 
-    print(
-        f"{'RANK':<5} | "
-        f"{'GAME TITLE':<32} | "
-        f"{'DISTANCE':<9} | "
-        f"{'KNN SCORE':<9} | "
-        f"{'RATING':<23} | "
-        f"{'POS %':<6} | "
-        f"{'REVIEWS':<9} | "
-        f"PRICE"
-    )
+#     print(
+#         f"{'RANK':<5} | "
+#         f"{'GAME TITLE':<32} | "
+#         f"{'DISTANCE':<9} | "
+#         f"{'KNN SCORE':<9} | "
+#         f"{'RATING':<23} | "
+#         f"{'POS %':<6} | "
+#         f"{'REVIEWS':<9} | "
+#         f"PRICE"
+#     )
 
-    print("-" * 145)
+#     print("-" * 145)
 
-    for rank, rec in enumerate(
-        recommendations,
-        start=1
-    ):
+#     for rank, rec in enumerate(
+#         recommendations,
+#         start=1
+#     ):
 
-        print(
-            f"#{rank:<4} | "
-            f"{str(rec['title'])[:32]:<32} | "
-            f"{rec['distance']:<9.4f} | "
-            f"{rec['knn_score']:<9.4f} | "
-            f"{str(rec['rating'])[:23]:<23} | "
-            f"{rec['positive_ratio']:<6.1f} | "
-            f"{rec['user_reviews']:<9,} | "
-            f"${rec['price']:.2f}"
-        )
+#         print(
+#             f"#{rank:<4} | "
+#             f"{str(rec['title'])[:32]:<32} | "
+#             f"{rec['distance']:<9.4f} | "
+#             f"{rec['knn_score']:<9.4f} | "
+#             f"{str(rec['rating'])[:23]:<23} | "
+#             f"{rec['positive_ratio']:<6.1f} | "
+#             f"{rec['user_reviews']:<9,} | "
+#             f"${rec['price']:.2f}"
+#         )
 
-    print("=" * 145)
+#     print("=" * 145)
 
 
 # =============================================================================
@@ -931,7 +931,7 @@ else:
 #     "Lower Euclidean distance = stronger recommendation."
 # )
 
-def return_recs(user_game):
+def return_recs_KNN(user_game):
     target_game, recommendations = recommend_games_knn(user_game,df,top_n=10)
 
     if target_game is not None:
