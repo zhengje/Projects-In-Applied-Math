@@ -745,62 +745,62 @@ def recommend_games(
     # Build recommendations
     # -------------------------------------------------------------------------
 
-    # results = []
+    results = []
 
-    # for idx in sorted_indices:
+    for idx in sorted_indices:
 
-    #     title = dataframe.iloc[idx][title_col]
+        title = dataframe.iloc[idx][title_col]
 
-    #     base_title = get_base_title(title)
+        base_title = get_base_title(title)
 
-    #     if base_title in seen_base_titles:
-    #         continue
+        if base_title in seen_base_titles:
+            continue
 
-    #     seen_base_titles.add(base_title)
+        seen_base_titles.add(base_title)
 
-    #     results.append({
+        results.append({
 
-    #         "title": title,
+            "title": title,
 
-    #         "composite_score": round(
-    #             float(hybrid_scores[idx]), 4
-    #         ),
+            "composite_score": round(
+                float(hybrid_scores[idx]), 4
+            ),
 
-    #         "tag_sim": round(
-    #             float(combined_tag_similarity[idx]), 4
-    #         ),
+            "tag_sim": round(
+                float(combined_tag_similarity[idx]), 4
+            ),
 
-    #         "genre_sim": round(
-    #             float(combined_genre_similarity[idx]), 4
-    #         ),
+            "genre_sim": round(
+                float(combined_genre_similarity[idx]), 4
+            ),
 
-    #         "category_sim": round(
-    #             float(combined_category_similarity[idx]), 4
-    #         ),
+            "category_sim": round(
+                float(combined_category_similarity[idx]), 4
+            ),
 
-    #         "filtered_tag_sim": round(
-    #             float(combined_filtered_tag_similarity[idx]), 4
-    #         ),
+            "filtered_tag_sim": round(
+                float(combined_filtered_tag_similarity[idx]), 4
+            ),
 
-    #         "rating": dataframe.iloc[idx][rating_col],
+            "rating": dataframe.iloc[idx][rating_col],
 
-    #         "positive_ratio": float(
-    #             s_positive_ratio.iloc[idx]
-    #         ),
+            "positive_ratio": float(
+                s_positive_ratio.iloc[idx]
+            ),
 
-    #         "user_reviews": int(
-    #             s_user_reviews.iloc[idx]
-    #         ),
+            "user_reviews": int(
+                s_user_reviews.iloc[idx]
+            ),
 
-    #         "price": float(
-    #             s_price.iloc[idx]
-    #         )
-    #     })
+            "price": float(
+                s_price.iloc[idx]
+            )
+        })
 
-    #     if len(results) == top_n:
-    #         break
+        if len(results) == top_n:
+            break
 
-    # return target_rows, results
+    return target_rows, results
 
 
 # =============================================================================
@@ -828,79 +828,98 @@ def recommend_games(
 #         game_list,
 #         df,
 #         top_n=20
-#     )
+    # )
 
-# # =========================================================================
-# # 16. DISPLAY RESULTS
-# # =========================================================================
-# if target_games is not None:
-#     print("\n" + "=" * 170)
-#     print(
-#         f"MULTI-GAME RECOMMENDATION PROFILE "
-#         f"({len(game_list)} Selected)"
-#     )
-#     print("=" * 170)
-#     print("\nSelected Games:")
-#     for i, game in enumerate(
-#         target_games,
-#         start=1
-#     ):
-#         print(f"{i}. {game[title_col]}")
-#     print(
-#         "\nRecommendations are based on TF-IDF cosine similarity, "
-#         "gameplay-specific tag weighting, and normalized numerical features."
-#     )
-#     print(
-#         "Only games with at least 5,000 user reviews are included."
-#     )
-#     print("\n" + "=" * 170)
-#     print(
-#         f"{'RANK':<5} | "
-#         f"{'GAME TITLE':<30} | "
-#         f"{'SCORE':<7} | "
-#         f"{'TAGS':<6} | "
-#         f"{'GENRE':<6} | "
-#         f"{'CAT':<6} | "
-#         f"{'F.TAGS':<6} | "
-#         f"{'RATING':<23} | "
-#         f"{'POS %':<7} | "
-#         f"{'REVIEWS':<10} | "
-#         f"{'PRICE'}"
-#     )
-#     print("=" * 170)
-#     for rank, rec in enumerate(
-#         recommendations,
-#         start=1
-#     ):
-#         rating_text = str(rec["rating"])[:23]
-#         print(
-#             f"#{rank:<4} | "
-#             f"{str(rec['title'])[:30]:<30} | "
-#             f"{rec['composite_score']:<7.4f} | "
-#             f"{rec['tag_sim']:<6.4f} | "
-#             f"{rec['genre_sim']:<6.4f} | "
-#             f"{rec['category_sim']:<6.4f} | "
-#             f"{rec['filtered_tag_sim']:<6.4f} | "
-#             f"{rating_text:<23} | "
-#             f"{rec['positive_ratio']:>5.1f}% | "
-#             f"{rec['user_reviews']:<10,} | "
-#             f"${rec['price']:.2f}"
-#         )
-#     print("=" * 170)
-#     print("\nRecommendation Equation:")
-#     print(
-#         "Score = "
-#         "0.40(Tag Similarity) + "
-#         "0.18(Genre Similarity) + "
-#         "0.05(Category Similarity) + "
-#         "0.12(Filtered Tag Similarity) + "
-#         "0.12(Rating) + "
-#         "0.07(Positive Ratio) + "
-#         "0.03(User Reviews) + "
-#         "0.03(Low Price)"
-#     )
-# else:
-#     print("\n" + recommendations)
+    # =========================================================================
+    # 16. DISPLAY RESULTS
+    # =========================================================================
+
+    # if target_games is not None:
+
+    #     print("\n" + "=" * 170)
+
+    #     print(
+    #         f"MULTI-GAME RECOMMENDATION PROFILE "
+    #         f"({len(game_list)} Selected)"
+    #     )
+
+    #     print("=" * 170)
+
+    #     print("\nSelected Games:")
+
+    #     for i, game in enumerate(
+    #         target_games,
+    #         start=1
+    #     ):
+    #         print(f"{i}. {game[title_col]}")
+
+    #     print(
+    #         "\nRecommendations are based on TF-IDF cosine similarity, "
+    #         "gameplay-specific tag weighting, and normalized numerical features."
+    #     )
+
+    #     print(
+    #         "Only games with at least 5,000 user reviews are included."
+    #     )
+
+    #     print("\n" + "=" * 170)
+
+    #     print(
+    #         f"{'RANK':<5} | "
+    #         f"{'GAME TITLE':<30} | "
+    #         f"{'SCORE':<7} | "
+    #         f"{'TAGS':<6} | "
+    #         f"{'GENRE':<6} | "
+    #         f"{'CAT':<6} | "
+    #         f"{'F.TAGS':<6} | "
+    #         f"{'RATING':<23} | "
+    #         f"{'POS %':<7} | "
+    #         f"{'REVIEWS':<10} | "
+    #         f"{'PRICE'}"
+    #     )
+
+    #     print("=" * 170)
+
+    #     for rank, rec in enumerate(
+    #         recommendations,
+    #         start=1
+    #     ):
+
+    #         rating_text = str(rec["rating"])[:23]
+
+    #         print(
+    #             f"#{rank:<4} | "
+    #             f"{str(rec['title'])[:30]:<30} | "
+    #             f"{rec['composite_score']:<7.4f} | "
+    #             f"{rec['tag_sim']:<6.4f} | "
+    #             f"{rec['genre_sim']:<6.4f} | "
+    #             f"{rec['category_sim']:<6.4f} | "
+    #             f"{rec['filtered_tag_sim']:<6.4f} | "
+    #             f"{rating_text:<23} | "
+    #             f"{rec['positive_ratio']:>5.1f}% | "
+    #             f"{rec['user_reviews']:<10,} | "
+    #             f"${rec['price']:.2f}"
+    #         )
+
+    #     print("=" * 170)
+
+    #     print("\nRecommendation Equation:")
+
+    #     print(
+    #         "Score = "
+    #         "0.40(Tag Similarity) + "
+    #         "0.18(Genre Similarity) + "
+    #         "0.05(Category Similarity) + "
+    #         "0.12(Filtered Tag Similarity) + "
+    #         "0.12(Rating) + "
+    #         "0.07(Positive Ratio) + "
+    #         "0.03(User Reviews) + "
+    #         "0.03(Low Price)"
+    #     )
+
+    # else:
+
+    #     print("\n" + recommendations)
 
 def return_recs_SM(games):
     return_arr = []
@@ -925,14 +944,14 @@ def return_recs_SM(games):
             ):
                 temp = {}
 
-            rating_text = str(rec["rating"])[:23]
+                rating_text = str(rec["rating"])[:23]
 
-            temp["rank"] = rank
-            temp["title"] = rec['title']
-            temp["price"] = rec['price']
-            temp['rating'] = rec['user_reviews']
+                temp["rank"] = rank
+                temp["title"] = rec['title']
+                temp["price"] = rec['price']
+                temp['rating'] = rec['rating']
 
-            return_arr.append(temp)
+                return_arr.append(temp)
 
 
             return return_arr

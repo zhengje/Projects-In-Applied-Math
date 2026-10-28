@@ -38,12 +38,7 @@ def get_reccomendations_knn():
         "returned_data": vals
     })
 
-if __name__ == "__main__":
-    app.run(debug=True)
-
-
-# Pass User Inputs into Backend (Matrix Similarity)
-@app.route("/game_MatSim",methods=["POST"],strict_slashes=False)
+@app.route("/game_MatSim", methods=["POST"], strict_slashes=False)
 def get_reccomendations_msim():
     json_names = request.get_json()
     names = json_names.get('body',[])
@@ -55,6 +50,12 @@ def get_reccomendations_msim():
         "returned_data": vals
     })
 
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+
+# Pass User Inputs into Backend (Matrix Similarity)
 # if __name__ == "__main__":
 #     app.run(debug=True)
 

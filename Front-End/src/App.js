@@ -88,7 +88,7 @@ console.log(options)
   }
 
     // Get Reccomendations from Backend (Similar Matrices)
-  const handleGetRecommendationsMatrixSim = async() => {
+  const handleGetRecommendationsMatSim = async() => {
   try {
     const response = await fetch("/game_MatSim", {
       method: "POST",
@@ -169,7 +169,7 @@ console.log(options)
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendationsMatrixSim()
+            handleGetRecommendationsMatSim()
             setHeader("Recommendations for Matrix Similarities Method")
             console.log(backendData)
           }}><span>Get Matrix Similarities Recommendations!</span></button>
