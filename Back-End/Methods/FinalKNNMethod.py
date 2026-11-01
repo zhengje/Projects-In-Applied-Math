@@ -457,8 +457,8 @@ norm_price_inv = 1.0 - normalize(
 # Same weights as the previous linear similarity model:
 #
 # Tags             = 0.00
-# Genres           = 0.18
-# Categories       = 0.05
+# Genres           = 0.20
+# Categories       = 0.08
 # Filtered Tags    = 0.40
 # Rating           = 0.08
 # Positive Ratio   = 0.08
@@ -481,13 +481,13 @@ norm_price_inv = 1.0 - normalize(
 
 weights = [
     0.00,  # Tags
-    0.25,  # Genres
-    0.05,  # Categories
+    0.20,  # Genres
+    0.08,  # Categories
     0.40,  # Filtered Tags
     0.08,  # Rating
     0.08,  # Positive Ratio
     0.13,  # User Reviews
-    0.01   # Low Price
+    0.03   # Low Price
 ]
 
 assert np.isclose(
@@ -897,13 +897,13 @@ def recommend_games_knn(
 # Weighted squared Euclidean distance:
 #
 # D^2 =
-# + 0.15*d_genres^2
-# + 0.05*d_categories^2
+# + 0.20*d_genres^2
+# + 0.08*d_categories^2
 # + 0.40*d_filtered_tags^2
 # + 0.08*d_rating^2
 # + 0.08*d_positive^2
 # + 0.13*d_reviews^2
-# + 0.01*d_low_price^2
+# + 0.03*d_low_price^2
 #
 # Smaller distance = better match.
 # =============================================================================
@@ -912,13 +912,13 @@ def recommend_games_knn(
 
 # print(
 #     "D^2 = "
-#     "0.25*d_genres^2 + "
-#     "0.05*d_categories^2 + "
+#     "0.20*d_genres^2 + "
+#     "0.08*d_categories^2 + "
 #     "0.40*d_filtered_tags^2 + "
 #     "0.08*d_rating^2 + "
 #     "0.08*d_positive^2 + "
 #     "0.13*d_reviews^2 + "
-#     "0.01*d_low_price^2"
+#     "0.03*d_low_price^2"
 # )
 
 # print(
