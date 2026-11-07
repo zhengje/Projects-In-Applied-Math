@@ -186,3 +186,15 @@ if __name__ == "__main__":
 #  8.Prison Architect                              (App ID: 233450, Score: 0.1040)
 #  9.Project Zomboid                               (App ID: 108600, Score: 0.1011)
 # 10.Dyson Sphere Program                          (App ID: 1366540, Score: 0.0996)                    
+
+# Recommended games [OMORI, Resident Evil]
+#  1.Among Us                                      (App ID: 945360, Score: 0.0195)
+#  2.Hollow Knight                                 (App ID: 367520, Score: 0.0151)
+#  3.Undertale                                     (App ID: 391540, Score: 0.0141)
+#  4.NieR:Automata™                                (App ID: 524220, Score: 0.0140)
+#  5.The Binding of Isaac: Rebirth                 (App ID: 250900, Score: 0.0140)
+#  6.Celeste                                       (App ID: 504230, Score: 0.0137)
+#  7.Inscryption                                   (App ID: 1092790, Score: 0.0124)
+#  8.Resident Evil 2                               (App ID: 883710, Score: 0.0123)
+#  9.DOOM Eternal                                  (App ID: 782330, Score: 0.0119)
+# 10.METAL GEAR RISING: REVENGEANCE                (App ID: 235460, Score: 0.0115)
