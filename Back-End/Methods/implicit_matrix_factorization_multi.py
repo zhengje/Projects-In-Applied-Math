@@ -8,19 +8,46 @@ import numpy as np
 import pandas as pd
 from scipy.sparse import csr_matrix
 import implicit
+import pickle
 
-def implicit_mf():
-    recomm_data = pd.read_csv("Back-End/Methods/Data_Subjective.csv")
+MODEL_PATH = "implicit_mf_model.pkl"
+def implicit_mf(force_retrain=False):
 
-    #Load game titles from app_id
+    #Check if a saved model exists and load it if available
+    if os.path.exists(MODEL_PATH) and not force_retrain:
+        print("Loading saved model and metadata from disk...")
+        with open(MODEL_PATH, "rb") as f:
+            artifacts = pickle.load(f)
+        return (
+            artifacts['model'], 
+            None,
+            artifacts['user_id_to_index_map'], 
+            artifacts['app_index_map'], 
+            artifacts['app_id_to_index_map'], 
+            artifacts['game_title'], 
+            artifacts['title_to_app_id_map']
+        )
+
+    print("Training new implicit matrix factorization model...")
+    recomm_data = pd.read_csv('Back-End/Methods/Data_Subjective.csv')
+
+
+    # Load game titles from app_id and build reverse mapping dictionary
+    title_to_app_id_map = {}
+    game_title = {}
     try:
-        game_data = pd.read_csv('Data Cleaning and Explore/Data_FixedF.csv')  # adjust path if inside another directory
+        game_data = pd.read_csv('Data Cleaning and Explore/Data_FixedF.csv')
         game_title = dict(zip(game_data['app_id'], game_data['title']))
-    except Exception:
-        game_title = {}
+        
+        # Build normalized lowercase title -> app_id lookup
+        for app_id, title in game_title.items():
+            if pd.notna(title):
+                title_to_app_id_map[str(title).strip().lower()] = app_id
+    except Exception as e:
+        print(f"Warning: Could not load game titles. Error: {e}")
 
     recomm_data['recommendations'] = np.log1p(recomm_data['hours'].clip(lower=0)) + (recomm_data['is_recommended'].astype(int) * 1.0)
-
+   
     #Filter out rows with recommendations <= 0
     recomm_data = recomm_data[recomm_data['recommendations'] > 0]
 
@@ -44,15 +71,54 @@ def implicit_mf():
 
     #Train the model on the user-app interaction matrix
     model.fit(user_app_matrix)
-    return model, user_app_matrix, user_id_to_index_map, app_index_map, app_id_to_index_map, game_title
 
-def similar_games_multi(app_ids, model, app_id_to_index_map, app_index_map, game_title, N=10):
-    valid_app_ids = [id for id in app_ids if id in app_id_to_index_map]
+    #Save trained model & maps to disk
+    artifacts = {
+        'model': model,
+        'user_id_to_index_map': user_id_to_index_map,
+        'app_index_map': app_index_map,
+        'app_id_to_index_map': app_id_to_index_map,
+        'game_title': game_title,
+        'title_to_app_id_map': title_to_app_id_map
+    }
+    with open(MODEL_PATH, "wb") as f:
+        pickle.dump(artifacts, f)
+    print(f"Model saved to {MODEL_PATH}")
+
+    return model, user_app_matrix, user_id_to_index_map, app_index_map, app_id_to_index_map, game_title, title_to_app_id_map
+
+def similar_games_multi(game_names, model, app_id_to_index_map, app_index_map, game_title, title_to_app_id_map, N=10):
+    valid_app_ids = []
+    resolved_titles = []
+
+    # Map input string names to app_ids
+    for name in game_names:
+        search_name = name.strip().lower()
+        app_id = title_to_app_id_map.get(search_name)
+
+        # Fallback to partial match if exact name match fails
+        if app_id is None or app_id not in app_id_to_index_map:
+            matches = [t for t in title_to_app_id_map if search_name in t]
+            matched_id = None
+            for match in matches:
+                candidate_id = title_to_app_id_map[match]
+                if candidate_id in app_id_to_index_map:
+                    matched_id = candidate_id
+                    break
+
+            if matched_id is not None:
+                app_id = matched_id
+                print(f"Using match: '{game_title[app_id]}' for search '{name}'")
+            else:
+                print(f"Skipping: Game '{name}' not found or has no user interaction data.")
+                continue
+
+        valid_app_ids.append(app_id)
+        resolved_titles.append(game_title.get(app_id, str(app_id)))
 
     if not valid_app_ids:
-        print("None of the App IDs provided were found in the dataset.")
+        print("None of the provided game names could be matched to trained matrix items.")
         return
-
     id_indices = [app_id_to_index_map[id] for id in valid_app_ids]
 
     #Create CSR matrix 
@@ -62,13 +128,25 @@ def similar_games_multi(app_ids, model, app_id_to_index_map, app_index_map, game
 
     user_items = csr_matrix((data, (rows, cols)), shape=(1, model.item_factors.shape[0]))
 
-    ids, scores = model.recommend(
-        userid =0,
-        user_items = user_items,
-        N=N,
-        filter_already_liked_items = True,
-        recalculate_user = True
+    try:
+        ids, scores = model.recommend(
+            userid=0,
+            user_items=user_items,
+            N=N,
+            filter_already_liked_items=True,
+            recalculate_user=True
     )
+    except TypeError:
+        ids, scores = model.recommend(
+        userid=0,
+        user_items=user_items,
+        N=N,
+        filter_already_liked_items=True
+    )
+
+    if isinstance(ids, np.ndarray) and ids.ndim > 1:
+        ids = ids[0]
+        scores = scores[0]
 
     input_names = [game_title.get(id, f"App ID: {id}") for id in valid_app_ids]
     print(f"Recommended games [{', '.join(input_names)}]")
@@ -80,29 +158,31 @@ def similar_games_multi(app_ids, model, app_id_to_index_map, app_index_map, game
 
 
 if __name__ == "__main__":
-    model, user_app_matrix, user_id_to_index_map, app_index_map, app_id_to_index_map, game_title = implicit_mf()
+    model, user_app_matrix, user_id_to_index_map, app_index_map, app_id_to_index_map, game_title, title_to_app_id_map = implicit_mf()
 
     # Pass a list of multiple App IDs (e.g., Dwarf Fortress + Factorio + RimWorld)
-    input_app_ids = [975370, 427520, 294100]
+    input_games = ["Omori", "Resident Evil"]
 
     similar_games_multi(
-        app_ids=input_app_ids,
+        game_names=input_games,
         model=model,
         app_id_to_index_map=app_id_to_index_map,
         app_index_map=app_index_map,
         game_title=game_title,
+        title_to_app_id_map=title_to_app_id_map,
         N=10
     )
 
 #Output
+
 # Recommended games [Dwarf Fortress, Factorio, RimWorld]
-#  1.Space Engineers                               (App ID: 244850, Score: 0.1753
-#  2.Kerbal Space Program                          (App ID: 220200, Score: 0.1584
-#  3.Cities: Skylines                              (App ID: 255710, Score: 0.1364
-#  4.Oxygen Not Included                           (App ID: 457140, Score: 0.1300
-#  5.Path of Exile                                 (App ID: 238960, Score: 0.1150
-#  6.Satisfactory                                  (App ID: 526870, Score: 0.1091
-#  7.Kenshi                                        (App ID: 233860, Score: 0.1084
-#  8.Prison Architect                              (App ID: 233450, Score: 0.1040
-#  9.Project Zomboid                               (App ID: 108600, Score: 0.1011
-# 10.Dyson Sphere Program                          (App ID: 1366540, Score: 0.0996
+#  1.Space Engineers                               (App ID: 244850, Score: 0.1753)
+#  2.Kerbal Space Program                          (App ID: 220200, Score: 0.1584)
+#  3.Cities: Skylines                              (App ID: 255710, Score: 0.1364)
+#  4.Oxygen Not Included                           (App ID: 457140, Score: 0.1300)
+#  5.Path of Exile                                 (App ID: 238960, Score: 0.1150)
+#  6.Satisfactory                                  (App ID: 526870, Score: 0.1091)
+#  7.Kenshi                                        (App ID: 233860, Score: 0.1084)
+#  8.Prison Architect                              (App ID: 233450, Score: 0.1040)
+#  9.Project Zomboid                               (App ID: 108600, Score: 0.1011)
+# 10.Dyson Sphere Program                          (App ID: 1366540, Score: 0.0996)                    
