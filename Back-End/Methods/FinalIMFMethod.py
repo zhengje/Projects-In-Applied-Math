@@ -157,21 +157,21 @@ def similar_games_multi(game_names, model, app_id_to_index_map, app_index_map, g
         print(f"{rank:2d}.{rec_title[:45]:<45} (App ID: {rec_app_id}, Score: {score:.4f})")
 
 
-if __name__ == "__main__":
-    model, user_app_matrix, user_id_to_index_map, app_index_map, app_id_to_index_map, game_title, title_to_app_id_map = implicit_mf()
+# if __name__ == "__main__":
+#     model, user_app_matrix, user_id_to_index_map, app_index_map, app_id_to_index_map, game_title, title_to_app_id_map = implicit_mf()
 
-    # Pass a list of multiple App IDs (e.g., Dwarf Fortress + Factorio + RimWorld)
-    input_games = ["Omori", "Resident Evil"]
+#     # Pass a list of multiple App IDs (e.g., Dwarf Fortress + Factorio + RimWorld)
+#     input_games = ["Omori", "Resident Evil"]
 
-    similar_games_multi(
-        game_names=input_games,
-        model=model,
-        app_id_to_index_map=app_id_to_index_map,
-        app_index_map=app_index_map,
-        game_title=game_title,
-        title_to_app_id_map=title_to_app_id_map,
-        N=10
-    )
+#     similar_games_multi(
+#         game_names=input_games,
+#         model=model,
+#         app_id_to_index_map=app_id_to_index_map,
+#         app_index_map=app_index_map,
+#         game_title=game_title,
+#         title_to_app_id_map=title_to_app_id_map,
+#         N=10
+#     )
 
 #Output
 
