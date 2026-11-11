@@ -87,10 +87,31 @@ console.log(options)
   }
   }
 
-    // Get Reccomendations from Backend (Similar Matrices)
+  // Get Reccomendations from Backend (Similar Matrices)
   const handleGetRecommendationsMatSim = async() => {
   try {
     const response = await fetch("/game_MatSim", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ 
+        body: selected
+       }),
+    });
+
+    const data = await response.json();
+    setBackendData(data)
+    console.log("Backend Data: ", data);
+  } catch (error) {
+    console.error("Error: ", error);
+  }
+  }
+
+  // Get Reccomendations from Backend (Similar Matrices)
+  const handleGetRecommendationsIMF = async() => {
+  try {
+    const response = await fetch("/game_IMF", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -176,7 +197,7 @@ console.log(options)
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendationsKNN()
+            handleGetRecommendationsIMF()
             setHeader("Recommendations for Implicit Matrix Method")
             console.log(backendData)
           }}><span>Get Implicit Matrix Recommendations!</span></button>

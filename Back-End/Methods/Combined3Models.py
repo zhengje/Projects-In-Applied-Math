@@ -5,7 +5,7 @@
 # =============================================================================
 import FinalKNNMethod as knn_script
 import FinalSimilarityMatrixMethod as sim_script
-import implicit_matrix_factorization_multi as imf_script
+import FinalIMFMethod as imf_script
 from scipy.sparse import csr_matrix
 import numpy as np
 import pandas as pd

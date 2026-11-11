@@ -12,7 +12,7 @@ from sklearn.preprocessing import MinMaxScaler
 # 1. LOAD DATASET
 # =============================================================================
 
-df = pd.read_csv("Back-End/Methods/Data_Objective.csv")
+df = pd.read_csv("Data_Objective.csv")
 
 print(f"Dataset successfully loaded! Total games: {len(df)}")
 print("CSV Columns found:", df.columns.tolist())

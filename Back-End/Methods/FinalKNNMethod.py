@@ -26,7 +26,7 @@ price_col = "price_final"
 # =============================================================================
 def load_data():
     
-    df = pd.read_csv("Back-End/Methods/Data_Objective.csv")
+    df = pd.read_csv("Data_Objective.csv")
 
     print(f"Games loaded: {len(df)}")
     print("CSV Columns found:", df.columns.tolist())

@@ -29,14 +29,14 @@ def implicit_mf(force_retrain=False):
         )
 
     print("Training new implicit matrix factorization model...")
-    recomm_data = pd.read_csv('Back-End/Methods/Data_Subjective.csv')
+    recomm_data = pd.read_csv('Data_Subjective.csv')
 
 
     # Load game titles from app_id and build reverse mapping dictionary
     title_to_app_id_map = {}
     game_title = {}
     try:
-        game_data = pd.read_csv('Data Cleaning and Explore/Data_FixedF.csv')
+        game_data = pd.read_csv('Data_Objective.csv')
         game_title = dict(zip(game_data['app_id'], game_data['title']))
         
         # Build normalized lowercase title -> app_id lookup
@@ -151,27 +151,37 @@ def similar_games_multi(game_names, model, app_id_to_index_map, app_index_map, g
     input_names = [game_title.get(id, f"App ID: {id}") for id in valid_app_ids]
     print(f"Recommended games [{', '.join(input_names)}]")
 
+    array = []
+
     for rank, (idx, score) in enumerate(zip(ids, scores), start=1):
+        temp = {}
+
         rec_app_id = app_index_map[idx]
         rec_title = game_title.get(rec_app_id, f"App ID: {rec_app_id}")
-        print(f"{rank:2d}.{rec_title[:45]:<45} (App ID: {rec_app_id}, Score: {score:.4f})")
+        # print(f"{rank:2d}.{rec_title[:45]:<45} (App ID: {rec_app_id}, Score: {score:.4f})")
 
+        temp["rank"] = rank
+        temp["title"] = rec_title
 
-# if __name__ == "__main__":
-#     model, user_app_matrix, user_id_to_index_map, app_index_map, app_id_to_index_map, game_title, title_to_app_id_map = implicit_mf()
+        array.append(temp)
 
-#     # Pass a list of multiple App IDs (e.g., Dwarf Fortress + Factorio + RimWorld)
-#     input_games = ["Omori", "Resident Evil"]
+    return array
 
-#     similar_games_multi(
-#         game_names=input_games,
-#         model=model,
-#         app_id_to_index_map=app_id_to_index_map,
-#         app_index_map=app_index_map,
-#         game_title=game_title,
-#         title_to_app_id_map=title_to_app_id_map,
-#         N=10
-#     )
+def return_recs_IMF(games):
+    model, user_app_matrix, user_id_to_index_map, app_index_map, app_id_to_index_map, game_title, title_to_app_id_map = implicit_mf()
+
+    # Pass a list of multiple App IDs (e.g., Dwarf Fortress + Factorio + RimWorld)
+    # input_games = ["Omori", "Resident Evil"]
+
+    return similar_games_multi(
+        game_names=games,
+        model=model,
+        app_id_to_index_map=app_id_to_index_map,
+        app_index_map=app_index_map,
+        game_title=game_title,
+        title_to_app_id_map=title_to_app_id_map,
+        N=10
+    )
 
 #Output
 
