@@ -1,8 +1,4 @@
 
-
-# =============================================================================
-# 3. RUN MODEL EXECUTION AND HARVEST RANK LISTS
-# =============================================================================
 import FinalKNNMethod as knn_script
 import FinalSimilarityMatrixMethod as sim_script
 import FinalIMFMethod as imf_script
@@ -13,28 +9,21 @@ import pandas as pd
 # =============================================================================
 # 1. LOAD DATASETS
 # =============================================================================
-# Update these paths inside Combined3Models.py to match your workspace folder layout
-# DATA_OBJECTIVE_PATH = "Back-End/Methods/Data_Objective.csv"
-# DATA_SUBJECTIVE_PATH = "Back-End/Methods/Data_Subjective.csv"
 
-# Shared primary metadata dataset
 dataset = pd.read_csv("Back-End/Methods/Data_Objective.csv")
 print(f"Fixed metadata dataset loaded: {len(dataset)} games")
 
-# Subjective user-interaction dataset
 subjective_df = pd.read_csv("Back-End/Methods/Data_Subjective.csv")
 print(f"Subjective interaction dataset loaded: {len(subjective_df)} records")
 
-# Central tracking parameters matching Section 5 constraints
+
 CANDIDATES_PER_MODEL = 100
 FINAL_TOP_N = 10
 
 N_RECS = CANDIDATES_PER_MODEL  # Feeds 100 deep candidates per model for high-coverage fusion
 
 
-# Central tracking parameters matching Section 5 constraints
-input_games = ["Omori", "Resident Evil"]
-N_RECS = CANDIDATES_PER_MODEL  # Feeds 100 deep candidates per model for high-coverage fusion
+input_games = ["Slay the Spire","Hades","Into the Breach"]
 
 # -----------------------------------------------------------------------------
 # MODEL 1: KNN Content Model
