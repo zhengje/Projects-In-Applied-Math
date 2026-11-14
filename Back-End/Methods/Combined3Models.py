@@ -10,10 +10,10 @@ import pandas as pd
 # 1. LOAD DATASETS
 # =============================================================================
 
-dataset = pd.read_csv("Back-End/Methods/Data_Objective.csv")
+dataset = pd.read_csv("Data_Objective.csv")
 print(f"Fixed metadata dataset loaded: {len(dataset)} games")
 
-subjective_df = pd.read_csv("Back-End/Methods/Data_Subjective.csv")
+subjective_df = pd.read_csv("Data_Subjective.csv")
 print(f"Subjective interaction dataset loaded: {len(subjective_df)} records")
 
 
@@ -142,8 +142,11 @@ def combine_recommendations(model_results, top_n=10):
         ['Fusion score', 'Models agreeing', 'Game'],
         ascending=[False, False, True]
     ).head(top_n).reset_index(drop=True)
-    ranking.index += 1
+    ranking.index = (ranking.index +1).astype('int64')
     ranking.index.name = 'Rank'
+
+    rank_cols = [col for col in ranking.columns if col.endswith(' rank')]
+    ranking[rank_cols] = ranking[rank_cols].astype('Int64')
 
     return ranking, overlap, weights
 
@@ -153,8 +156,8 @@ def combine_recommendations(model_results, top_n=10):
 # =============================================================================
 model_results = {
     'KNN': knn_results,
-    'Similarity': sim_results,
-    'Implicit ALS': implicit_results
+    'CosineSimilarity': sim_results,
+    'Implicit Matrix Factorization': implicit_results
 }
 
 # Run the Section 5 evaluation pipeline directly using your variables
@@ -164,4 +167,4 @@ print('\n3x3 JACCARD OVERLAP MATRIX')
 print(overlap.round(4).to_string())
 print('\nMODEL WEIGHTS:', {k: round(v, 4) for k, v in weights.items()})
 print('\nFINAL HYBRID TOP 10')
-print(ranking.to_string(float_format=lambda x: f'{x:.6f}'))
+print(ranking.to_string(float_format=lambda x: f'{x:6f}'))
