@@ -7,6 +7,8 @@ export default function Information({ rank, title}) {
     )
 }
 
+
+
 // Shows rank, title, rating, and price (only rank and title for IMF)
 
 // export default function Information({rank, title, price, rating}) {
