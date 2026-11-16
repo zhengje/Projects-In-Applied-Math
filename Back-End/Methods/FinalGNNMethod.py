@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import torch
 from torch_geometric.nn import SAGEConv
+from tqdm import tqdm  # Added for the loading bar
 
 MODEL_FILE = "gnn_recommender.pt"
 MAPPINGS_FILE = "gnn_mappings.pkl"
@@ -21,7 +22,6 @@ set_seed(42)
 
 
 # 3-hop GNN Model for bipartite user-game graph
-
 class SimpleBipartiteGNN(torch.nn.Module):
     def __init__(self, hidden_dim):
         super().__init__()
@@ -58,7 +58,7 @@ class SimpleBipartiteGNN(torch.nn.Module):
 
         return u_final, g_final
 
-    #Train and Save the model (Runs only once)
+# Train and Save the model (Runs only once) with a tqdm loading bar
 def train_and_save_artifacts():
     print("No saved model found. Processing CSV files and training model...")
 
@@ -93,8 +93,7 @@ def train_and_save_artifacts():
     game_emb = torch.nn.Embedding(len(unique_apps), EMBEDDING_DIM)
     model = SimpleBipartiteGNN(hidden_dim=EMBEDDING_DIM)
 
-    #Train the model
-    
+    # Train the model
     optimizer = torch.optim.Adam(
         list(model.parameters()) + 
         list(user_emb.parameters()) + 
@@ -103,44 +102,48 @@ def train_and_save_artifacts():
 
     model.train()
     epochs = 30
-    batch_size = 65536  # Process 65k interactions at a time instead of millions at once
+    batch_size = 65536  # Process 65k interactions at a time
     num_edges = edge_index.size(1)
+    
     print(f"Training GNN for {epochs} epochs (Total edges: {num_edges})...")
 
     for epoch in range(1, epochs + 1):
-        # Shuffle edge indices each epoch
         perm = torch.randperm(num_edges)
         total_loss = 0.0
         num_batches = 0
 
-        for start in range(0, num_edges, batch_size):
-            optimizer.zero_grad()
+        # Compute GNN forward pass ONCE per epoch to prevent memory explosion
+        optimizer.zero_grad()
+        u_final, g_final = model(user_emb.weight, game_emb.weight, edge_index)
 
-            # Forward pass over the graph
-            u_final, g_final = model(user_emb.weight, game_emb.weight, edge_index)
+        num_steps = (num_edges + batch_size - 1) // batch_size
+        with tqdm(range(0, num_edges, batch_size), desc=f"Epoch {epoch:02d}/{epochs}", leave=False) as batch_bar:
+            for start in batch_bar:
+                # Slice a mini-batch of positive edges
+                batch_idx = perm[start : start + batch_size]
+                pos_src = edge_index[0, batch_idx]
+                pos_dst = edge_index[1, batch_idx]
 
-            # Slice a mini-batch of positive edges
-            batch_idx = perm[start : start + batch_size]
-            pos_src = edge_index[0, batch_idx]
-            pos_dst = edge_index[1, batch_idx]
+                pos_scores = (u_final[pos_src] * g_final[pos_dst]).sum(dim=-1)
 
-            pos_scores = (u_final[pos_src] * g_final[pos_dst]).sum(dim=-1)
+                # Negative samples only for this mini-batch
+                neg_dst = torch.randint(0, len(unique_apps), (batch_idx.size(0),))
+                neg_scores = (u_final[pos_src] * g_final[neg_dst]).sum(dim=-1)
 
-            # Negative samples only for this mini-batch
-            neg_dst = torch.randint(0, len(unique_apps), (batch_idx.size(0),))
-            neg_scores = (u_final[pos_src] * g_final[neg_dst]).sum(dim=-1)
+                loss = -torch.log(torch.sigmoid(pos_scores - neg_scores) + 1e-8).mean()
+                
+                loss.backward()
+                optimizer.step()
+                optimizer.zero_grad()
 
-            loss = -torch.log(torch.sigmoid(pos_scores - neg_scores) + 1e-8).mean()
-            loss.backward()
-            optimizer.step()
+                total_loss += loss.item()
+                num_batches += 1
 
-            total_loss += loss.item()
-            num_batches += 1
+                batch_bar.set_postfix(loss=f"{loss.item():.4f}")
 
-        if epoch % 5 == 0 or epoch == 1:
-            print(f" Epoch {epoch:02d}/{epochs} | Avg Loss: {total_loss / num_batches:.4f}")
-
-            
+        avg_loss = total_loss / num_batches
+        print(f" Epoch {epoch:02d}/{epochs} completed | Avg Loss: {avg_loss:.4f}")
+        
     # Save model and mappings
     checkpoint = {
         'model_state_dict': model.state_dict(),
@@ -163,14 +166,12 @@ def train_and_save_artifacts():
         
     print("Setup complete! Model weights and mappings saved to disk.\n")
 
-#Recommendation function
 
+# Recommendation function
 def get_recommendations(input_game_names, top_k=10):
-    # Only trains once if saved files don't exist yet
     if not os.path.exists(MODEL_FILE) or not os.path.exists(MAPPINGS_FILE):
         train_and_save_artifacts()
 
-    # Load pre-saved mappings
     with open(MAPPINGS_FILE, 'rb') as f:
         mappings = pickle.load(f)
 
@@ -180,7 +181,6 @@ def get_recommendations(input_game_names, top_k=10):
     num_users = mappings['num_users']
     num_apps = mappings['num_apps']
 
-    # Load pre-saved weights
     model = SimpleBipartiteGNN(hidden_dim=EMBEDDING_DIM)
     user_emb = torch.nn.Embedding(num_users + 1, EMBEDDING_DIM)
     game_emb = torch.nn.Embedding(num_apps, EMBEDDING_DIM)
@@ -214,7 +214,6 @@ def get_recommendations(input_game_names, top_k=10):
         print("No games match.")
         return
 
-    
     new_edges = torch.tensor([user_indices, app_indices], dtype=torch.long)
     full_inference_edge_index = torch.cat([mappings['train_edge_index'], new_edges], dim=1)
 
@@ -238,7 +237,8 @@ def get_recommendations(input_game_names, top_k=10):
         title = app_id_to_title.get(original_app_id, f"App ID {original_app_id}")
         print(f" {pos}. {title}")
 
-#Example usage
+
+# Example usage
 if __name__ == "__main__":
     input_list = [
         "Dwarf Fortress",
