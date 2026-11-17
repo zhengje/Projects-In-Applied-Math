@@ -368,3 +368,19 @@ if __name__ == "__main__":
 #Precision@10: On average, 0.15 of the top 10 recommendations were matched to the hidden games across all users.
 #Recall@10: On average, 0.30 of the hidden games were successfully recommended in the top 10 across all users.
 #NormalizedDiscountedCumulativeGain@10: Measures ranking quality, with 1.0 being perfect ranking. Higher values mean the matched games appeared closer to Rank #1.
+
+# ================================================================================
+# 80/20 BENCHMARK: JACCARD HYBRID RRF VS. INDIVIDUAL MODELS
+# ================================================================================
+#              Model  Users Evaluated  HitRate@10  Precision@10  Recall@10  NDCG@10
+# Jaccard Hybrid RRF             1000       0.454        0.0608     0.1258   0.1076
+#                KNN             1000       0.222        0.0243     0.0574   0.0475
+#   CosineSimilarity             1000       0.397        0.0486     0.1029   0.0924
+#        Implicit MF             1000       0.567        0.0854     0.1584   0.1465
+#                GNN             1000       0.186        0.0205     0.0399   0.0364
+
+# Average Jaccard Independence Weights Across Users:
+#  - KNN: 0.2216
+#  - CosineSimilarity: 0.2167
+#  - Implicit Matrix Factorization: 0.2719
+#  - GNN: 0.2898

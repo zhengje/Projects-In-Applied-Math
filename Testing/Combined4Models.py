@@ -97,6 +97,7 @@ print(f"Successfully gathered list arrays:")
 print(f" -> KNN Recs Count: {len(knn_results)}")
 print(f" -> Similarity Recs Count: {len(sim_results)}")
 print(f" -> Implicit ALS Recs Count: {len(implicit_results)}")
+print(f" -> GNN Recs Count: {len(gnn_results)}")
 
 
 # =============================================================================
@@ -171,7 +172,7 @@ model_results = {
 # Run the Section 5 evaluation pipeline directly using your variables
 ranking, overlap, weights = combine_recommendations(model_results, top_n=FINAL_TOP_N)
 
-print('\n3x3 JACCARD OVERLAP MATRIX')
+print('\n4x4 JACCARD OVERLAP MATRIX')
 print(overlap.round(4).to_string())
 print('\nMODEL WEIGHTS:', {k: round(v, 4) for k, v in weights.items()})
 print('\nFINAL HYBRID TOP 10')
