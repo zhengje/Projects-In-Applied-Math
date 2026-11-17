@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+/* App Header */
+#App-h1 {
+  min-height: 15vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(20px + 2vmin);
+  color: #c4c3c0;
+  font-family: Ubuntu;
+}
+
+.Recommender_System {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: baseline;
+    font-family: Ubuntu;
+}
+
+/* Subsections for Different Methods */
+.main-box-1{
+    border:1px solid #171414;
+    margin: 20px;
+}
+
+.box-title{
+    background-color:#25374B;
+    padding:10px;
+    color: #ffffff;
+    font-weight: bold;
+    font-family: Ubuntu;
+    font-size: 25px;
+}
+.box-content{
+    background-color: #232d3f;
+    padding-left:10px;
+    padding-right:10px;
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+.box-msg{
+    font-weight: 600;
+    font-family: Ubuntu;
+}
+
+#items{
+    border-width: 2px;
+    border-radius: 8px;
+    background-color: #19AFFF;
+    padding: 5px;
+}
+
+#xbutton{
+    background-color: transparent;
+    margin-top: 10px;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+.openModalBtn {
+    border-radius: 2px;
+    border: none;
+    padding: 1px;
+    display: inline-block;
+    cursor: pointer;
+    text-decoration: none !important;
+    color: #d2efa9 !important;
+
+    background: transparent;    text-shadow: 1px 1px 0px rgba( 0, 0, 0, 0.3 );
+}
+
+.openModalBtn > span {
+    border-radius: 2px;
+    display: block;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 15px;
+
+
+    color: #fff !important;
+
+    background: #aaceff;
+    background: -webkit-linear-gradient( top, #7e98bd 5%, #283f60 95%);
+    background: linear-gradient( to bottom, #aaceff 5%, #3c6091 95%);
+
+    padding: 15px;
+    font-size: 15px;
+    line-height: 30px;
+
+}
