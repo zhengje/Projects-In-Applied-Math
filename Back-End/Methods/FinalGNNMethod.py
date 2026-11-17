@@ -236,22 +236,31 @@ def get_recommendations(input_game_names, top_k=10):
     scores = torch.matmul(all_game_embeddings, target_user_vector)
     scores[played_game_indices] = -float('inf')
 
+    if not played_game_indices:
+        print("No games match.")
+        return []  # <-- Return empty list instead of None so the fusion pipeline never crashes
+
+    # ... (keep graph inference and topk scoring) ...
+
     k = min(top_k, num_apps)
     top_indices = torch.topk(scores, k=k).indices.tolist()
     inverse_app_map = {v: k for k, v in app_map.items()}
 
-    print(f"\nRecommendations generated based on your input list:")
-    for pos, idx in enumerate(top_indices, 1):
+    results = []
+    for idx in top_indices:
         original_app_id = inverse_app_map[idx]
-        title = app_id_to_title.get(original_app_id, f"App ID {original_app_id}")
-        print(f" {pos}. {title}")
+        title = app_id_to_title.get(original_app_id)
+        if title:
+            results.append({'title': title})
+
+    return results
 
 
 # Example usage
-if __name__ == "__main__":
-    input_list = [
-        "Dwarf Fortress",
-        "Factorio",
-        "RimWorld"
-    ]
-    get_recommendations(input_list, top_k=10)
+# if __name__ == "__main__":
+#     input_list = [
+#         "Dwarf Fortress",
+#         "Factorio",
+#         "RimWorld"
+#     ]
+#     get_recommendations(input_list, top_k=10)

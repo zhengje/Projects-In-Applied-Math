@@ -1,13 +1,162 @@
 import sys
+import os
+import pickle
 
 import numpy as np
 import pandas as pd
+import torch
 from scipy.sparse import csr_matrix
 
 import FinalKNNMethod as knn_mod
 import FinalSimilarityMatrixMethod as sim_mod
 import FinalIMFMethod as imf_mod
-from Combined3ModelsTest import combine_recommendations
+import FinalGNNMethod as gnn_mod
+from Combined4Models import combine_recommendations
+
+
+def _chunked_sage_conv(conv_layer, x_tuple, edge_index, num_target_nodes, chunk_size=2_000_000):
+    """Runs SAGEConv in edge chunks to prevent 30M-edge scatter_add RuntimeError: bad allocation."""
+    x_src, x_dst = x_tuple
+    device = x_src.device
+    hidden_dim = x_src.size(1)
+
+    aggr_sum = torch.zeros((num_target_nodes, hidden_dim), device=device)
+    deg = torch.zeros((num_target_nodes, 1), device=device)
+
+    num_edges = edge_index.size(1)
+    for start in range(0, num_edges, chunk_size):
+        src_idx = edge_index[0, start : start + chunk_size]
+        dst_idx = edge_index[1, start : start + chunk_size]
+
+        aggr_sum.index_add_(0, dst_idx, x_src[src_idx])
+        deg.index_add_(0, dst_idx, torch.ones((src_idx.size(0), 1), device=device))
+
+    mean_aggr = aggr_sum / deg.clamp(min=1.0)
+    out = conv_layer.lin_l(mean_aggr)
+    if getattr(conv_layer, "root_weight", False) and hasattr(conv_layer, "lin_r"):
+        out = out + conv_layer.lin_r(x_dst)
+    return out
+
+
+def load_gnn_artifacts():
+    """Loads the trained GNN and computes final game embeddings in memory-safe chunks."""
+    if not os.path.exists(gnn_mod.MODEL_FILE) or not os.path.exists(gnn_mod.MAPPINGS_FILE):
+        gnn_mod.train_and_save_artifacts()
+
+    with open(gnn_mod.MAPPINGS_FILE, "rb") as f:
+        mappings = pickle.load(f)
+
+    device = getattr(gnn_mod, "DEVICE", torch.device("cuda" if torch.cuda.is_available() else "cpu"))
+    num_apps = mappings["num_apps"]
+
+    model = gnn_mod.SimpleBipartiteGNN(hidden_dim=gnn_mod.EMBEDDING_DIM).to(device)
+    checkpoint = torch.load(gnn_mod.MODEL_FILE, map_location=device)
+    emb_rows = checkpoint["user_emb_state_dict"]["weight"].shape[0]
+
+    user_emb = torch.nn.Embedding(emb_rows, gnn_mod.EMBEDDING_DIM).to(device)
+    game_emb = torch.nn.Embedding(num_apps, gnn_mod.EMBEDDING_DIM).to(device)
+
+    model.load_state_dict(checkpoint["model_state_dict"])
+    user_emb.load_state_dict(checkpoint["user_emb_state_dict"])
+    game_emb.load_state_dict(checkpoint["game_emb_state_dict"])
+    model.eval()
+
+    train_edges = mappings["train_edge_index"].to(device)
+    rev_edges = train_edges.flip(0)
+    inverse_app_map = {v: k for k, v in mappings["app_map"].items()}
+
+    num_u_nodes = user_emb.weight.size(0)
+    num_g_nodes = game_emb.weight.size(0)
+
+    # Chunked 3-hop forward pass (uses < 100MB RAM instead of crashing on 30.8M edges)
+    with torch.no_grad():
+        u_0 = user_emb.weight
+        g_0 = game_emb.weight
+
+        g_1 = _chunked_sage_conv(model.conv1_u2g, (u_0, g_0), train_edges, num_g_nodes).relu()
+        u_1 = _chunked_sage_conv(model.conv1_g2u, (g_0, u_0), rev_edges, num_u_nodes).relu()
+
+        g_2 = _chunked_sage_conv(model.conv2_u2g, (u_1, g_1), train_edges, num_g_nodes).relu()
+        u_2 = _chunked_sage_conv(model.conv2_g2u, (g_1, u_1), rev_edges, num_u_nodes).relu()
+
+        g_3 = _chunked_sage_conv(model.conv3_u2g, (u_2, g_2), train_edges, num_g_nodes).relu()
+
+        all_game_embeddings = ((g_1 + g_2 + g_3) / 3.0).detach()
+
+    # Free large tensors from RAM immediately
+    del train_edges, rev_edges, user_emb
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+    return {
+        "model": model,
+        "all_game_embeddings": all_game_embeddings,
+        "base_game_weights": game_emb.weight.detach(),
+        "mappings": mappings,
+        "inverse_app_map": inverse_app_map,
+        "device": device,
+    }
+
+
+def predict_gnn_fast(gnn_ctx, input_game_names, top_k=100):
+    """Sub-millisecond cold-start inference using only the user's played games."""
+    mappings = gnn_ctx["mappings"]
+    app_map = mappings["app_map"]
+    title_to_app_id = mappings["title_to_app_id"]
+    app_id_to_title = mappings["app_id_to_title"]
+    num_apps = mappings["num_apps"]
+    device = gnn_ctx["device"]
+
+    played_game_indices = set()
+    for game_name in input_game_names:
+        clean_name = str(game_name).strip().lower()
+        raw_id = title_to_app_id.get(clean_name)
+        if raw_id is not None and raw_id in app_map:
+            played_game_indices.add(app_map[raw_id])
+
+    if not played_game_indices:
+        return []
+
+    played_list = sorted(played_game_indices)
+    model = gnn_ctx["model"]
+    all_game_embeddings = gnn_ctx["all_game_embeddings"]
+
+    with torch.no_grad():
+        num_played = len(played_list)
+        local_game_idx = torch.arange(num_played, device=device)
+        local_user_idx = torch.zeros(num_played, dtype=torch.long, device=device)
+
+        local_u2g = torch.stack([local_user_idx, local_game_idx], dim=0)
+        local_g2u = torch.stack([local_game_idx, local_user_idx], dim=0)
+
+        u_0 = torch.zeros((1, gnn_mod.EMBEDDING_DIM), device=device)
+        g_0 = gnn_ctx["base_game_weights"][played_list]
+
+        g_1 = model.conv1_u2g((u_0, g_0), local_u2g).relu()
+        u_1 = model.conv1_g2u((g_0, u_0), local_g2u).relu()
+
+        g_2 = model.conv2_u2g((u_1, g_1), local_u2g).relu()
+        u_2 = model.conv2_g2u((g_1, u_1), local_g2u).relu()
+
+        # Fixed: conv3_g2u maps games -> user
+        u_3 = model.conv3_g2u((g_2, u_2), local_g2u).relu()
+
+        target_user_vector = ((u_1 + u_2 + u_3) / 3.0).squeeze(0)
+
+        scores = torch.matmul(all_game_embeddings, target_user_vector)
+        scores[played_list] = -float("inf")
+
+        k = min(top_k, num_apps)
+        top_indices = torch.topk(scores, k=k).indices.tolist()
+
+    results = []
+    for idx in top_indices:
+        original_app_id = gnn_ctx["inverse_app_map"][idx]
+        title = app_id_to_title.get(original_app_id)
+        if title:
+            results.append({"title": title})
+
+    return results
 
 
 def evaluate_hybrid_jaccard_80_20(
@@ -25,6 +174,7 @@ def evaluate_hybrid_jaccard_80_20(
     # 1. Load IMF model & mappings ONCE
     imf_mod.MODEL_PATH = model_pkl_path
     imf_model, _, _, app_index_map, app_id_to_index_map, game_title, title_to_app_id_map = imf_mod.implicit_mf()
+    gnn_ctx = load_gnn_artifacts()
 
     # 2. Build valid title sets for each model
     knn_titles = set(knn_mod.df["title"].astype(str).str.lower().str.strip())
@@ -35,6 +185,12 @@ def evaluate_hybrid_jaccard_80_20(
         if aid in game_title and pd.notna(game_title[aid])
     }
 
+    gnn_mappings = gnn_ctx["mappings"]
+    gnn_titles = {
+        str(gnn_mappings["app_id_to_title"][aid]).strip().lower()
+        for aid in gnn_mappings["app_map"]
+        if aid in gnn_mappings["app_id_to_title"] and pd.notna(gnn_mappings["app_id_to_title"][aid])
+    }
     # Common catalog across all 3 models so every model can generate candidates & be scored fairly
     common_titles = knn_titles & sim_titles & imf_titles
 
@@ -59,12 +215,12 @@ def evaluate_hybrid_jaccard_80_20(
     if max_users and len(eligible_users) > max_users:
         eligible_users = list(rng.choice(eligible_users, size=max_users, replace=False))
 
-    print(f"Evaluating Jaccard Hybrid (and all 3 base models) on {len(eligible_users)} users (80/20 split, Top-{top_k})...")
+    print(f"Evaluating Jaccard Hybrid (and all 4 base models) on {len(eligible_users)} users (80/20 split, Top-{top_k})...")
 
     # Track metrics for Hybrid + each individual model on the exact same users
-    model_names = ["Jaccard Hybrid RRF", "KNN", "CosineSimilarity", "Implicit MF"]
+    model_names = ["Jaccard Hybrid RRF", "KNN", "CosineSimilarity", "Implicit MF", "GNN"]
     metrics = {m: {"hits": [], "precision": [], "recall": [], "ndcg": []} for m in model_names}
-    avg_weights = {"KNN": [], "CosineSimilarity": [], "Implicit Matrix Factorization": []}
+    avg_weights = {"KNN": [], "CosineSimilarity": [], "Implicit Matrix Factorization": [], "GNN": []}
 
     def record_metrics(model_key, rec_titles, test_set):
         hit_vec = [1 if t in test_set else 0 for t in rec_titles[:top_k]]
@@ -139,15 +295,19 @@ def evaluate_hybrid_jaccard_80_20(
                 if rec_title:
                     implicit_results.append({"title": rec_title})
 
+        # --- Model 4 (GNN) ---
+        gnn_results = predict_gnn_fast(gnn_ctx, train_games, top_k=candidates_per_model)
+
         # Skip user if none of the models returned candidates
-        if not (knn_results or sim_results or implicit_results):
+        if not (knn_results or sim_results or implicit_results or gnn_results):
             continue
 
         # --- Combine via Jaccard-Weighted RRF ---
         model_results = {
             "KNN": knn_results,
             "CosineSimilarity": sim_results,
-            "Implicit Matrix Factorization": implicit_results
+            "Implicit Matrix Factorization": implicit_results,
+            "GNN": gnn_results,
         }
         ranking_df, _, weights = combine_recommendations(model_results, top_n=top_k)
 
@@ -159,11 +319,13 @@ def evaluate_hybrid_jaccard_80_20(
         knn_top_titles = [r["title"].lower().strip() for r in knn_results[:top_k]]
         sim_top_titles = [r["title"].lower().strip() for r in sim_results[:top_k]]
         imf_top_titles = [r["title"].lower().strip() for r in implicit_results[:top_k]]
+        gnn_top_titles = [r["title"].lower().strip() for r in gnn_results[:top_k]]
 
         record_metrics("Jaccard Hybrid RRF", hybrid_titles, test_games)
         record_metrics("KNN", knn_top_titles, test_games)
         record_metrics("CosineSimilarity", sim_top_titles, test_games)
         record_metrics("Implicit MF", imf_top_titles, test_games)
+        record_metrics("GNN", gnn_top_titles, test_games)
 
     # 6. Print Side-by-Side Comparison Table
     summary_rows = []
