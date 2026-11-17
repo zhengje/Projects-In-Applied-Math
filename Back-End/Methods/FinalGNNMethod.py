@@ -116,6 +116,11 @@ def train_and_save_artifacts():
         optimizer.zero_grad()
         u_final, g_final = model(user_emb.weight, game_emb.weight, edge_index)
 
+        # Detached copies: per-batch backward only touches these (cheap). The GNN graph
+        # is backpropagated once per epoch, after the gradients of all batches are summed.
+        u_det = u_final.detach().requires_grad_(True)
+        g_det = g_final.detach().requires_grad_(True)
+
         num_steps = (num_edges + batch_size - 1) // batch_size
         with tqdm(range(0, num_edges, batch_size), desc=f"Epoch {epoch:02d}/{epochs}", leave=False) as batch_bar:
             for start in batch_bar:
@@ -124,22 +129,26 @@ def train_and_save_artifacts():
                 pos_src = edge_index[0, batch_idx]
                 pos_dst = edge_index[1, batch_idx]
 
-                pos_scores = (u_final[pos_src] * g_final[pos_dst]).sum(dim=-1)
+                pos_scores = (u_det[pos_src] * g_det[pos_dst]).sum(dim=-1)
 
                 # Negative samples only for this mini-batch
                 neg_dst = torch.randint(0, len(unique_apps), (batch_idx.size(0),))
-                neg_scores = (u_final[pos_src] * g_final[neg_dst]).sum(dim=-1)
+                neg_scores = (u_det[pos_src] * g_det[neg_dst]).sum(dim=-1)
 
                 loss = -torch.log(torch.sigmoid(pos_scores - neg_scores) + 1e-8).mean()
                 
-                loss.backward()
-                optimizer.step()
-                optimizer.zero_grad()
+                # Weight by batch share so the summed gradient equals that of the mean over all edges
+                (loss * batch_idx.size(0) / num_edges).backward()
 
                 total_loss += loss.item()
                 num_batches += 1
 
                 batch_bar.set_postfix(loss=f"{loss.item():.4f}")
+
+        # One backward pass through the GNN and one optimizer step per epoch
+        torch.autograd.backward([u_final, g_final], [u_det.grad, g_det.grad])
+        optimizer.step()
+        optimizer.zero_grad()
 
         avg_loss = total_loss / num_batches
         print(f" Epoch {epoch:02d}/{epochs} completed | Avg Loss: {avg_loss:.4f}")
