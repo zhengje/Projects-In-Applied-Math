@@ -251,16 +251,16 @@ def get_recommendations(input_game_names, top_k=10):
         original_app_id = inverse_app_map[idx]
         title = app_id_to_title.get(original_app_id)
         if title:
-            results.append({'title': title})
+            results.append({'Title': title,'Score': scores[idx].item()})
 
     return results
 
 
 # Example usage
-# if __name__ == "__main__":
-#     input_list = [
-#         "Dwarf Fortress",
-#         "Factorio",
-#         "RimWorld"
-#     ]
-#     get_recommendations(input_list, top_k=10)
+if __name__ == "__main__":
+    input_list = [
+        "Dwarf Fortress",
+        "Factorio",
+        "RimWorld"
+    ]
+    print(get_recommendations(input_list, top_k=10))
