@@ -251,7 +251,7 @@ def get_recommendations(input_game_names, top_k=10):
         if title:
             results.append({
                 'Rank': len(results) + 1,
-                'Title': title,
+                'title': title,
                 'Score': scores[idx].item()
             })
 
@@ -265,13 +265,13 @@ def return_recs_GNN(games):
 
 
 # Example usage
-if __name__ == "__main__":
-    input_list = [
-        "Dwarf Fortress",
-        "Factorio",
-        "RimWorld"
-    ]
-    print(get_recommendations(input_list, top_k=10))
+# if __name__ == "__main__":
+#     input_list = [
+#         "Dwarf Fortress",
+#         "Factorio",
+#         "RimWorld"
+#     ]
+#     print(get_recommendations(input_list, top_k=10))
 
 # [{'Rank': 1, 'Title': 'Halo Infinite', 'Score': 11.81427001953125}, 
 # {'Rank': 2, 'Title': 'Beat Saber', 'Score': 11.656856536865234},
