@@ -243,9 +243,11 @@ def get_recommendations(input_game_names, top_k=10):
     inverse_app_map = {v: k for k, v in app_map.items()}
 
     results = []
+
     for idx in top_indices:
         original_app_id = inverse_app_map[idx]
         title = app_id_to_title.get(original_app_id)
+
         if title:
             results.append({
                 'Rank': len(results) + 1,
@@ -254,6 +256,12 @@ def get_recommendations(input_game_names, top_k=10):
             })
 
     return results
+
+
+# Create Function for UI Interaction:
+def return_recs_GNN(games):
+    print("GNN Loading")
+    return get_recommendations(games,top_k=10)
 
 
 # Example usage
