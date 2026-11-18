@@ -250,9 +250,9 @@ def get_recommendations(input_game_names, top_k=10):
 
         if title:
             results.append({
-                'Rank': len(results) + 1,
+                # 'Rank': len(results) + 1,
                 'title': title,
-                'Score': scores[idx].item()
+                # 'Score': scores[idx].item()
             })
 
     return results
