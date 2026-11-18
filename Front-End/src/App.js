@@ -129,26 +129,26 @@ console.log(options)
   }
   }
 
-  // // Get Reccomendations from Backend (GNN)
-  // const handleGetRecommendationsGNN = async() => {
-  // try {
-  //   const response = await fetch("/game_GNN", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify({ 
-  //       body: selected
-  //      }),
-  //   });
+  // Get Reccomendations from Backend (GNN)
+  const handleGetRecommendationsGNN = async() => {
+  try {
+    const response = await fetch("/game_GNN", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ 
+        body: selected
+       }),
+    });
 
-  //   const data = await response.json();
-  //   setBackendData(data)
-  //   console.log("Backend Data: ", data);
-  // } catch (error) {
-  //   console.error("Error: ", error);
-  // }
-  // }
+    const data = await response.json();
+    setBackendData(data)
+    console.log("Backend Data: ", data);
+  } catch (error) {
+    console.error("Error: ", error);
+  }
+  }
 
   // // Get Reccomendations from Backend (Jaccard)
   // const handleGetRecommendationsJac = async() => {
@@ -244,14 +244,14 @@ console.log(options)
             console.log(backendData)
           }}><span>Get Implicit Matrix Recommendations!</span></button>
 
-          {/* <button className="openModalBtn" onClick={() => {
+          <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
             handleGetRecommendationsGNN()
             setHeader("Recommendations for GNN Method")
             console.log(backendData)
           }}><span>Get GNN Recommendations!</span></button>
 
-          <button className="openModalBtn" onClick={() => {
+          {/* <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
             handleGetRecommendationsJac()
             setHeader("Recommendations for Jaccard Method")

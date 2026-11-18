@@ -247,20 +247,29 @@ def get_recommendations(input_game_names, top_k=10):
     inverse_app_map = {v: k for k, v in app_map.items()}
 
     results = []
+
     for idx in top_indices:
         original_app_id = inverse_app_map[idx]
         title = app_id_to_title.get(original_app_id)
+
         if title:
-            results.append({'Title': title,'Score': scores[idx].item()})
+            print(idx)
+            results.append({"rank": idx, 'title': title})
 
     return results
 
 
+# Create Function for UI Interaction:
+def return_recs_GNN(games):
+    print("GNN Loading")
+    return get_recommendations(games,top_k=10)
+
+
 # Example usage
-if __name__ == "__main__":
-    input_list = [
-        "Dwarf Fortress",
-        "Factorio",
-        "RimWorld"
-    ]
-    print(get_recommendations(input_list, top_k=10))
+# if __name__ == "__main__":
+#     input_list = [
+#         "Dwarf Fortress",
+#         "Factorio",
+#         "RimWorld"
+#     ]
+#     get_recommendations(input_list, top_k=10)

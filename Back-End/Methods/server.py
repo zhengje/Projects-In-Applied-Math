@@ -67,22 +67,22 @@ def get_reccomendations_imf():
         "returned_data": vals
     })
 
-if __name__ == "__main__":
-    app.run(debug=True)
-
 
 # Pass User Inputs into Backend (GNN)
-# @app.route("/game_GNN",methods=["POST"],strict_slashes=False)
-# def get_reccomendations_gnn():
-#     json_names = request.get_json()
-#     names = json_names.get('body',[])
-#     vals = GNN.return_recs_GNN(names)
+@app.route("/game_GNN",methods=["POST"],strict_slashes=False)
+def get_reccomendations_gnn():
+    json_names = request.get_json()
+    names = json_names.get('body',[])
+    vals = GNN.return_recs_GNN(names)
 
-#     return jsonify({ 
-#         "message": "Success",
-#         "name_recieved": names,
-#         "returned_data": vals
-#     })
+    return jsonify({ 
+        "message": "Success",
+        "name_recieved": names,
+        "returned_data": vals
+    })
+
+if __name__ == "__main__":
+    app.run(debug=True)
 
 
 # Pass User Inputs into Backend (Jaccard)
