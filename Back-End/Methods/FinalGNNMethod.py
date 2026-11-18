@@ -221,7 +221,7 @@ def get_recommendations(input_game_names, top_k=10):
 
     if not user_indices:
         print("No games match.")
-        return
+        return []
 
     new_edges = torch.tensor([user_indices, app_indices], dtype=torch.long)
     full_inference_edge_index = torch.cat([mappings['train_edge_index'], new_edges], dim=1)
@@ -236,10 +236,6 @@ def get_recommendations(input_game_names, top_k=10):
     scores = torch.matmul(all_game_embeddings, target_user_vector)
     scores[played_game_indices] = -float('inf')
 
-    if not played_game_indices:
-        print("No games match.")
-        return []  # <-- Return empty list instead of None so the fusion pipeline never crashes
-
     # ... (keep graph inference and topk scoring) ...
 
     k = min(top_k, num_apps)
@@ -251,7 +247,11 @@ def get_recommendations(input_game_names, top_k=10):
         original_app_id = inverse_app_map[idx]
         title = app_id_to_title.get(original_app_id)
         if title:
-            results.append({'Title': title,'Score': scores[idx].item()})
+            results.append({
+                'Rank': len(results) + 1,
+                'Title': title,
+                'Score': scores[idx].item()
+            })
 
     return results
 
@@ -264,3 +264,14 @@ if __name__ == "__main__":
         "RimWorld"
     ]
     print(get_recommendations(input_list, top_k=10))
+
+# [{'Rank': 1, 'Title': 'Halo Infinite', 'Score': 11.81427001953125}, 
+# {'Rank': 2, 'Title': 'Beat Saber', 'Score': 11.656856536865234},
+#  {'Rank': 3, 'Title': 'Space Engineers', 'Score': 11.551319122314453}, 
+# {'Rank': 4, 'Title': 'ARK: Survival Evolved', 'Score': 11.426057815551758}, 
+# {'Rank': 5, 'Title': 'Kerbal Space Program', 'Score': 11.203850746154785}, 
+# {'Rank': 6, 'Title': 'Insurgency: Sandstorm', 'Score': 11.052913665771484}, 
+# {'Rank': 7, 'Title': 'Life is Strange - Episode 1', 'Score': 10.869279861450195},
+#  {'Rank': 8, 'Title': "Don't Starve Together", 'Score': 10.840055465698242},
+#  {'Rank': 9, 'Title': 'NARUTO SHIPPUDEN: Ultimate Ninja STORM 4', 'Score': 10.800004959106445}, 
+# {'Rank': 10, 'Title': 'Crab Game', 'Score': 10.772802352905273}]
