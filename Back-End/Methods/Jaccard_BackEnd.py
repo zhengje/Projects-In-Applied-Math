@@ -4,7 +4,6 @@ import FinalSimilarityMatrixMethod as sim_script
 import FinalIMFMethod as imf_script
 import FinalGNNMethod as gnn_script
 from scipy.sparse import csr_matrix
-from itertools import islice
 import numpy as np
 import pandas as pd
 
@@ -28,132 +27,10 @@ filterKey = ['title']
 N_RECS = CANDIDATES_PER_MODEL  # Feeds 100 deep candidates per model for high-coverage fusion
 
 
-input_games = ["Slay the Spire","Hades","Into the Breach"]
-
-# -----------------------------------------------------------------------------
-# MODEL 1: KNN Content Model
-# -----------------------------------------------------------------------------
-
-# Already returns dictionaries matching [{'title': 'Name', ...}] out-of-the-box
-_, knn_results = knn_script.recommend_games_knn(input_games, dataset, top_n=N_RECS)
-
-# Return Top 10 KNN Titles as an Array
-print("KNN Top 10 Loading")
-tempKNN = knn_results[:10]
-knn_top10 = []
-
-for rank in range(FINAL_TOP_N):
-    temp = {}
-    for key in filterKey:
-        if key in tempKNN[rank]:
-            temp[key] = tempKNN[rank][key]
-            knn_top10.append(temp)
-
-print(knn_top10) # Additional Test - To Be Commented Later
-print("KNN Top 10 Done")
-
-
-# -----------------------------------------------------------------------------
-# MODEL 2: Cosine Similarity Matrix
-# -----------------------------------------------------------------------------
-# Already returns dictionaries matching [{'title': 'Name', ...}] out-of-the-box
-_, sim_results = sim_script.recommend_games(input_games, dataset, top_n=N_RECS)
-
-# Return Top 10 CosSim Titles as an Array
-print("SIM Top 10 Loading")
-tempSIM = sim_results[:10]
-sim_top10 = []
-
-for rank in range(FINAL_TOP_N):
-    temp = {}
-    for key in filterKey:
-        if key in tempSIM[rank]:
-            temp[key] = tempSIM[rank][key]
-            sim_top10.append(temp)
-
-print(sim_top10) # Additional Test - To Be Commented Later
-print("SIM Top 10 Done")
-
-
-# -----------------------------------------------------------------------------
-# MODEL 3: Implicit Matrix Factorization Multi
-# -----------------------------------------------------------------------------
-# 1. Run initialization script to resolve matrices and weights mapping dictionaries
-model, _, _, app_index_map, app_id_to_index_map, game_title, title_to_app_id_map = imf_script.implicit_mf()
-
-# 2. Build live session sparse vector array map coordinates
-valid_app_ids = []
-for name in input_games:
-    search_name = name.strip().lower()
-    app_id = title_to_app_id_map.get(search_name)
-    if app_id is not None and app_id in app_id_to_index_map:
-        valid_app_ids.append(app_id)
-
-id_indices = [app_id_to_index_map[id] for id in valid_app_ids]
-cols = id_indices
-rows = [0] * len(cols)
-data = [1.0] * len(cols)
-user_items = csr_matrix((data, (rows, cols)), shape=(1, model.item_factors.shape[0]))
-
-# 3. Request ALS candidate coordinates
-try:
-    ids, scores = model.recommend(
-        userid=0,
-        user_items=user_items,
-        N=N_RECS,
-        filter_already_liked_items=True,
-        recalculate_user=True
-    )
-except TypeError:
-    ids, scores = model.recommend(
-        userid=0,
-        user_items=user_items,
-        N=N_RECS,
-        filter_already_liked_items=True
-    )
-
-if isinstance(ids, np.ndarray) and ids.ndim > 1:
-    ids = ids[0]
-
-# 4. Wrap outputs into a structure matching {'title': rec_title} for Section 5 RRF
-implicit_results = []
-for idx in ids:
-    rec_app_id = app_index_map[idx]
-    rec_title = game_title.get(rec_app_id)
-    if rec_title:
-        implicit_results.append({'title': rec_title})
-
-
-# Return Top 10 IMF Titles as an Array
-print("IMF Top 10 Loading")
-imf_top10 = implicit_results[:10]
-print(imf_top10) # Additional Test - To Be Commented Later
-print("IMF Top 10 Done")
-
-
-# -----------------------------------------------------------------------------
-# MODEL 4: Graph Neural Network (3-Hop Bipartite GNN)
-# -----------------------------------------------------------------------------
-gnn_results = gnn_script.get_recommendations(input_games, top_k=N_RECS)
-
-# Return Top 10 GNN Titles as an Array
-print("GNN Top 10 Loading")
-gnn_top10 = gnn_results[:10]
-print(gnn_top10) # Additional Test - To Be Commented Later
-print("GNN Top 10 Done")
-
-
-# Confirm matrix harvest array counts match expectations before pipeline merging
-print(f"Successfully gathered list arrays:")
-print(f" -> KNN Recs Count: {len(knn_results)}")
-print(f" -> Similarity Recs Count: {len(sim_results)}")
-print(f" -> Implicit ALS Recs Count: {len(implicit_results)}")
-print(f" -> GNN Recs Count: {len(gnn_results)}")
-
-
 # =============================================================================
-# COMBINE PIPELINE ENGINE FUNCTIONS
+# 2. DEFINE FUNCTIONS
 # =============================================================================
+
 def game_key(title):
     return str(title).strip().casefold()
 
@@ -204,46 +81,173 @@ def combine_recommendations(model_results, top_n=10):
     ranking.index = (ranking.index +1).astype('int64')
     ranking.index.name = 'Rank'
 
-
-    print("JAC Top 10 Loading")
+    # Return Top 10 Jaccard Titles as an Array
+    # print("JAC Top 10 Loading")
     tempJAC = ranking['Game']
-    jac_top10 = []
+    jac_recs = []
 
     for key, value in tempJAC.items():
         temp = {'title': value}
-        print(temp)
-        jac_top10.append(temp)
+        jac_recs.append(temp)
 
-    print(jac_top10)
+    # print(jac_recs) # To be Commented Later
     print("JAC Top 10 Done")
-    
+
 
     rank_cols = [col for col in ranking.columns if col.endswith(' rank')]
     ranking[rank_cols] = ranking[rank_cols].astype('Int64')
 
-    return ranking, overlap, weights
+    return ranking, overlap, weights, jac_recs
 
 
-# =============================================================================
-# MAP RECS DIRECTLY INTO YOUR COMBINE PIPELINE ENGINE
-# =============================================================================
-model_results = {
-    'KNN': knn_results,
-    'CosineSimilarity': sim_results,
-    'Implicit Matrix Factorization': implicit_results,
-    'GNN' : gnn_results
-}
+def recommendations(input_games):
+    # -----------------------------------------------------------------------------
+    # MODEL 1: KNN Content Model
+    # -----------------------------------------------------------------------------
+
+    # Already returns dictionaries matching [{'title': 'Name', ...}] out-of-the-box
+    _, knn_results = knn_script.recommend_games_knn(input_games, dataset, top_n=N_RECS)
+
+    # Return Top 10 KNN Titles as an Array
+    # print("KNN Top 10 Loading")
+    tempKNN = knn_results[:10]
+    knn_top10 = []
+
+    for rank in range(FINAL_TOP_N):
+        temp = {}
+        for key in filterKey:
+            if key in tempKNN[rank]:
+                temp[key] = tempKNN[rank][key]
+                knn_top10.append(temp)
+
+    # print(knn_top10) # Additional Test - To Be Commented Later
+    print("KNN Top 10 Done")
 
 
-# Run the Section 5 evaluation pipeline directly using your variables
-ranking, overlap, weights = combine_recommendations(model_results, top_n=FINAL_TOP_N)
+    # -----------------------------------------------------------------------------
+    # MODEL 2: Cosine Similarity Matrix
+    # -----------------------------------------------------------------------------
+    # Already returns dictionaries matching [{'title': 'Name', ...}] out-of-the-box
+    _, sim_results = sim_script.recommend_games(input_games, dataset, top_n=N_RECS)
+
+    # Return Top 10 CosSim Titles as an Array
+    # print("SIM Top 10 Loading")
+    tempSIM = sim_results[:10]
+    sim_top10 = []
+
+    for rank in range(FINAL_TOP_N):
+        temp = {}
+        for key in filterKey:
+            if key in tempSIM[rank]:
+                temp[key] = tempSIM[rank][key]
+                sim_top10.append(temp)
+
+    # print(sim_top10) # Additional Test - To Be Commented Later
+    print("SIM Top 10 Done")
 
 
-print('\n4x4 JACCARD OVERLAP MATRIX')
-print(overlap.round(4).to_string())
-print('\nMODEL WEIGHTS:', {k: round(v, 4) for k, v in weights.items()})
-print('\nFINAL HYBRID TOP 10')
-print(ranking.to_string(float_format=lambda x: f'{x:6f}'))
+    # -----------------------------------------------------------------------------
+    # MODEL 3: Implicit Matrix Factorization Multi
+    # -----------------------------------------------------------------------------
+    # 1. Run initialization script to resolve matrices and weights mapping dictionaries
+    model, _, _, app_index_map, app_id_to_index_map, game_title, title_to_app_id_map = imf_script.implicit_mf()
+
+    # 2. Build live session sparse vector array map coordinates
+    valid_app_ids = []
+    for name in input_games:
+        search_name = name.strip().lower()
+        app_id = title_to_app_id_map.get(search_name)
+        if app_id is not None and app_id in app_id_to_index_map:
+            valid_app_ids.append(app_id)
+
+    id_indices = [app_id_to_index_map[id] for id in valid_app_ids]
+    cols = id_indices
+    rows = [0] * len(cols)
+    data = [1.0] * len(cols)
+    user_items = csr_matrix((data, (rows, cols)), shape=(1, model.item_factors.shape[0]))
+
+    # 3. Request ALS candidate coordinates
+    try:
+        ids, scores = model.recommend(
+            userid=0,
+            user_items=user_items,
+            N=N_RECS,
+            filter_already_liked_items=True,
+            recalculate_user=True
+        )
+    except TypeError:
+        ids, scores = model.recommend(
+            userid=0,
+            user_items=user_items,
+            N=N_RECS,
+            filter_already_liked_items=True
+        )
+
+    if isinstance(ids, np.ndarray) and ids.ndim > 1:
+        ids = ids[0]
+
+    # 4. Wrap outputs into a structure matching {'title': rec_title} for Section 5 RRF
+    implicit_results = []
+    for idx in ids:
+        rec_app_id = app_index_map[idx]
+        rec_title = game_title.get(rec_app_id)
+        if rec_title:
+            implicit_results.append({'title': rec_title})
+
+
+    # Return Top 10 IMF Titles as an Array
+    # print("IMF Top 10 Loading")
+    imf_top10 = implicit_results[:10]
+    # print(imf_top10) # Additional Test - To Be Commented Later
+    print("IMF Top 10 Done")
+
+
+    # -----------------------------------------------------------------------------
+    # MODEL 4: Graph Neural Network (3-Hop Bipartite GNN)
+    # -----------------------------------------------------------------------------
+    gnn_results = gnn_script.get_recommendations(input_games, top_k=N_RECS)
+
+    # Return Top 10 GNN Titles as an Array
+    # print("GNN Top 10 Loading")
+    gnn_top10 = gnn_results[:10]
+    # print(gnn_top10) # Additional Test - To Be Commented Later
+    print("GNN Top 10 Done")
+
+
+    # Confirm matrix harvest array counts match expectations before pipeline merging
+    # print(f"Successfully gathered list arrays:")
+    # print(f" -> KNN Recs Count: {len(knn_results)}")
+    # print(f" -> Similarity Recs Count: {len(sim_results)}")
+    # print(f" -> Implicit ALS Recs Count: {len(implicit_results)}")
+    # print(f" -> GNN Recs Count: {len(gnn_results)}")
+
+
+    # =============================================================================
+    # COMBINE PIPELINE ENGINE FUNCTIONS
+    # =============================================================================
+
+
+    # =============================================================================
+    # MAP RECS DIRECTLY INTO YOUR COMBINE PIPELINE ENGINE
+    # =============================================================================
+    model_results = {
+        'KNN': knn_results,
+        'CosineSimilarity': sim_results,
+        'Implicit Matrix Factorization': implicit_results,
+        'GNN' : gnn_results
+    }
+
+    # Run the Section 5 evaluation pipeline directly using your variables
+    ranking, overlap, weights, jac_top10 = combine_recommendations(model_results, top_n=FINAL_TOP_N)
+
+    return knn_top10, sim_top10, imf_top10, gnn_top10, jac_top10
+
+
+    # print('\n4x4 JACCARD OVERLAP MATRIX')
+    # print(overlap.round(4).to_string())
+    # print('\nMODEL WEIGHTS:', {k: round(v, 4) for k, v in weights.items()})
+    # print('\nFINAL HYBRID TOP 10')
+    # print(ranking.to_string(float_format=lambda x: f'{x:6f}'))
 
 
 # FINAL HYBRID TOP 10
@@ -262,7 +266,16 @@ print(ranking.to_string(float_format=lambda x: f'{x:6f}'))
 
 
 
+# Test if Top 10 Results are Being Returned Correctly
+# print(knn_top10,
+#       sim_top10,
+#       imf_top10,
+#       gnn_top10,
+#       jac_top10)
+
 
 # Set up route to return all reccomendations (knn_top10, sim_top10, imf_top10, gnn_top10, jac_top10)
-# def return_recs(games):
-#     return jaccard(games)
+def return_recs(games):
+    # knn_recs, sim_recs, imf_recs, gnn_recs, jac_recs = (recommendations(games))
+    # print(knn_recs, sim_recs, imf_recs, gnn_recs, jac_recs)
+    return recommendations(games)
