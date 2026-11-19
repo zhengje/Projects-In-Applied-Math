@@ -59,7 +59,7 @@ print("KNN Top 10 Done")
 # Already returns dictionaries matching [{'title': 'Name', ...}] out-of-the-box
 _, sim_results = sim_script.recommend_games(input_games, dataset, top_n=N_RECS)
 
-# Return Top 10 KNN Titles as an Array
+# Return Top 10 CosSim Titles as an Array
 print("SIM Top 10 Loading")
 tempSIM = sim_results[:10]
 sim_top10 = []
@@ -123,6 +123,8 @@ for idx in ids:
     if rec_title:
         implicit_results.append({'title': rec_title})
 
+
+# Return Top 10 IMF Titles as an Array
 print("IMF Top 10 Loading")
 imf_top10 = implicit_results[:10]
 print(imf_top10) # Additional Test - To Be Commented Later
@@ -134,6 +136,7 @@ print("IMF Top 10 Done")
 # -----------------------------------------------------------------------------
 gnn_results = gnn_script.get_recommendations(input_games, top_k=N_RECS)
 
+# Return Top 10 GNN Titles as an Array
 print("GNN Top 10 Loading")
 gnn_top10 = gnn_results[:10]
 print(gnn_top10) # Additional Test - To Be Commented Later
@@ -201,6 +204,20 @@ def combine_recommendations(model_results, top_n=10):
     ranking.index = (ranking.index +1).astype('int64')
     ranking.index.name = 'Rank'
 
+
+    print("JAC Top 10 Loading")
+    tempJAC = ranking['Game']
+    jac_top10 = []
+
+    for key, value in tempJAC.items():
+        temp = {'title': value}
+        print(temp)
+        jac_top10.append(temp)
+
+    print(jac_top10)
+    print("JAC Top 10 Done")
+    
+
     rank_cols = [col for col in ranking.columns if col.endswith(' rank')]
     ranking[rank_cols] = ranking[rank_cols].astype('Int64')
 
@@ -220,7 +237,7 @@ model_results = {
 
 # Run the Section 5 evaluation pipeline directly using your variables
 ranking, overlap, weights = combine_recommendations(model_results, top_n=FINAL_TOP_N)
-print(ranking)
+
 
 print('\n4x4 JACCARD OVERLAP MATRIX')
 print(overlap.round(4).to_string())
