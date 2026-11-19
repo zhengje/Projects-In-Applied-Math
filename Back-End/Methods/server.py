@@ -1,9 +1,10 @@
 from flask import Flask, jsonify, request
 import pandas as pd
 import FinalKNNMethod as KNN
-import FinalSimilarityMatrixMethod as SM
-import FinalIMFMethod as IMF
-import FinalGNNMethod as GNN
+# import FinalSimilarityMatrixMethod as SM
+# import FinalIMFMethod as IMF
+# import FinalGNNMethod as GNN
+import Jaccard_BackEnd as JAC
 app = Flask(__name__)
 
 
@@ -26,54 +27,13 @@ def get_names():
 def FE_game_names():
     return get_names()
 
-# Pass User Inputs into Backend (KNN)
-@app.route("/game_KNN",methods=["POST"],strict_slashes=False)
-def get_reccomendations_knn():
+
+# Pass User Inputs into Backend
+@app.route("/game_recs",methods=["POST"],strict_slashes=False)
+def get_recomendations():
     json_names = request.get_json()
     names = json_names.get('body',[])
-    vals = KNN.return_recs_KNN(names)
-
-    return jsonify({ 
-        "message": "Success",
-        "name_recieved": names,
-        "returned_data": vals
-    })
-
-
-# Pass User Inputs into Backend (Matrix Similarities)
-@app.route("/game_MatSim", methods=["POST"], strict_slashes=False)
-def get_reccomendations_msim():
-    json_names = request.get_json()
-    names = json_names.get('body',[])
-    vals = SM.return_recs_SM(names)
-
-    return jsonify({ 
-        "message": "Success",
-        "name_recieved": names,
-        "returned_data": vals
-    })
-
-
-# Pass User Inputs into Backend (Implicit Matrix)
-@app.route("/game_IMF",methods=["POST"],strict_slashes=False)
-def get_reccomendations_imf():
-    json_names = request.get_json()
-    names = json_names.get('body',[])
-    vals = IMF.return_recs_IMF(names)
-
-    return jsonify({ 
-        "message": "Success",
-        "name_recieved": names,
-        "returned_data": vals
-    })
-
-
-# Pass User Inputs into Backend (GNN)
-@app.route("/game_GNN",methods=["POST"],strict_slashes=False)
-def get_reccomendations_gnn():
-    json_names = request.get_json()
-    names = json_names.get('body',[])
-    vals = GNN.return_recs_GNN(names)
+    vals = JAC.return_recs(names)
 
     return jsonify({ 
         "message": "Success",
@@ -85,12 +45,56 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
-# Pass User Inputs into Backend (Jaccard)
-# @app.route("/game_jac",methods=["POST"],strict_slashes=False)
-# def get_reccomendations_jac():
+
+# Old Code from Previous Methods (pulling results from individual files)
+# # Pass User Inputs into Backend (KNN)
+# @app.route("/game_KNN",methods=["POST"],strict_slashes=False)
+# def get_reccomendations_knn():
 #     json_names = request.get_json()
 #     names = json_names.get('body',[])
-#     vals = jac.return_recs_jac(names)
+#     vals = KNN.return_recs_KNN(names)
+
+#     return jsonify({ 
+#         "message": "Success",
+#         "name_recieved": names,
+#         "returned_data": vals
+#     })
+
+
+# # Pass User Inputs into Backend (Matrix Similarities)
+# @app.route("/game_MatSim", methods=["POST"], strict_slashes=False)
+# def get_reccomendations_msim():
+#     json_names = request.get_json()
+#     names = json_names.get('body',[])
+#     vals = SM.return_recs_SM(names)
+
+#     return jsonify({ 
+#         "message": "Success",
+#         "name_recieved": names,
+#         "returned_data": vals
+#     })
+
+
+# # Pass User Inputs into Backend (Implicit Matrix)
+# @app.route("/game_IMF",methods=["POST"],strict_slashes=False)
+# def get_reccomendations_imf():
+#     json_names = request.get_json()
+#     names = json_names.get('body',[])
+#     vals = IMF.return_recs_IMF(names)
+
+#     return jsonify({ 
+#         "message": "Success",
+#         "name_recieved": names,
+#         "returned_data": vals
+#     })
+
+
+# # Pass User Inputs into Backend (GNN)
+# @app.route("/game_GNN",methods=["POST"],strict_slashes=False)
+# def get_reccomendations_gnn():
+#     json_names = request.get_json()
+#     names = json_names.get('body',[])
+#     vals = GNN.return_recs_GNN(names)
 
 #     return jsonify({ 
 #         "message": "Success",

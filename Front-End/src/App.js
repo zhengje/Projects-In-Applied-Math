@@ -66,10 +66,10 @@ console.log(options)
     setSelected((prev) => prev.filter((i) => i !== item));
   };
 
-  // Get Reccomendations from Backend (KNN)
-  const handleGetRecommendationsKNN = async() => {
+  // Get Reccomendations from Backend
+  const handleGetRecommendations = async() => {
   try {
-    const response = await fetch("/game_KNN", {
+    const response = await fetch("/game_recs", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -87,94 +87,11 @@ console.log(options)
   }
   }
 
-  // Get Reccomendations from Backend (Similar Matrices)
-  const handleGetRecommendationsMatSim = async() => {
-  try {
-    const response = await fetch("/game_MatSim", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ 
-        body: selected
-       }),
-    });
-
-    const data = await response.json();
-    setBackendData(data)
-    console.log("Backend Data: ", data);
-  } catch (error) {
-    console.error("Error: ", error);
-  }
-  }
-
-  // Get Reccomendations from Backend (Implicit Matrices)
-  const handleGetRecommendationsIMF = async() => {
-  try {
-    const response = await fetch("/game_IMF", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ 
-        body: selected
-       }),
-    });
-
-    const data = await response.json();
-    setBackendData(data)
-    console.log("Backend Data: ", data);
-  } catch (error) {
-    console.error("Error: ", error);
-  }
-  }
-
-  // Get Reccomendations from Backend (GNN)
-  const handleGetRecommendationsGNN = async() => {
-  try {
-    const response = await fetch("/game_GNN", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ 
-        body: selected
-       }),
-    });
-
-    const data = await response.json();
-    setBackendData(data)
-    console.log("Backend Data: ", data);
-  } catch (error) {
-    console.error("Error: ", error);
-  }
-  }
-
-  // // Get Reccomendations from Backend (Jaccard)
-  // const handleGetRecommendationsJac = async() => {
-  // try {
-  //   const response = await fetch("/game_Jac", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify({ 
-  //       body: selected
-  //      }),
-  //   });
-
-  //   const data = await response.json();
-  //   setBackendData(data)
-  //   console.log("Backend Data: ", data);
-  // } catch (error) {
-  //   console.error("Error: ", error);
-  // }
-  // }
 
   return (
     <div className="Recommender_System">
       
-      <h1 id="App-h1"> Recommender System for Popular Steam Games (Up to Oct. 2023!)</h1>
+      <h1 id="App-h1"> Recommender System for Popular Steam Games</h1>
 
       <div className="main-box-1">
         <div className="box-title">
@@ -222,41 +139,63 @@ console.log(options)
       )}
     </div>
 
-    {/* Buttons to Initiate Getting Reccomendations */}
+          {/* Button to Initiate Getting Reccomendations */}
+          <button className="searchBtn" onClick={() => {
+            handleGetRecommendations()
+            setHeader("Load Recommendations")
+          }}><span>Load Recommendations!</span></button>
+      </div>
+      </div>
+
+
+      {/* Modals to Display Recmmndations */}
+      <div className="main-box-1">
+        <div className="box-title">
+          View Recommendations
+        </div>
+        <div className="box-content">
+
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendationsKNN()
+            handleGetRecommendations()
             setHeader("Recommendations for KNN Method")
             console.log(backendData)
-          }}><span>Get KNN Recommendations!</span></button>
+          }}><span>KNN Recommendations</span></button>
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendationsMatSim()
+            handleGetRecommendations()
             setHeader("Recommendations for Matrix Similarities Method")
             console.log(backendData)
-          }}><span>Get Matrix Similarities Recommendations!</span></button>
+          }}><span>Matrix Similarities Recommendations</span></button>
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendationsIMF()
+            handleGetRecommendations()
             setHeader("Recommendations for Implicit Matrix Method")
             console.log(backendData)
-          }}><span>Get Implicit Matrix Recommendations!</span></button>
+          }}><span>Implicit Matrix Recommendations</span></button>
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendationsGNN()
+            handleGetRecommendations()
             setHeader("Recommendations for GNN Method")
             console.log(backendData)
-          }}><span>Get GNN Recommendations!</span></button>
+          }}><span>GNN Recommendations</span></button>
 
-          {/* <button className="openModalBtn" onClick={() => {
+          <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendationsJac()
+            handleGetRecommendations()
             setHeader("Recommendations for Jaccard Method")
             console.log(backendData)
-          }}><span>Get Jaccard Recommendations!</span></button> */}
+          }}><span>Pairwise Jaccard Recommendations</span></button>
+
+          <button className="openModalBtn" onClick={() => {
+            setOpenModal(true)
+            handleGetRecommendations()
+            setHeader("Recommendations for Jaccard Method")
+            console.log(backendData)
+          }}><span>All Recommendations</span></button>
           
       </div>
     </div>

@@ -266,16 +266,27 @@ def recommendations(input_games):
 
 
 
-# Test if Top 10 Results are Being Returned Correctly
-# print(knn_top10,
-#       sim_top10,
-#       imf_top10,
-#       gnn_top10,
-#       jac_top10)
 
 
 # Set up route to return all reccomendations (knn_top10, sim_top10, imf_top10, gnn_top10, jac_top10)
 def return_recs(games):
-    # knn_recs, sim_recs, imf_recs, gnn_recs, jac_recs = (recommendations(games))
-    # print(knn_recs, sim_recs, imf_recs, gnn_recs, jac_recs)
-    return recommendations(games)
+    knn_recs, sim_recs, imf_recs, gnn_recs, jac_recs = (recommendations(games))
+    
+    # Test if Top 10 Results are Being Returned Correctly
+    print("KNN:", knn_recs, 
+          "SIM:", sim_recs,
+          "IMF:", imf_recs,
+          "GNN:", gnn_recs,
+          "JAC:", jac_recs)
+
+    # Make a Dictionary of Recommendations
+    recs = {
+        'KNN' : knn_recs,
+        'SIM' : sim_recs,
+        'IMF' : imf_recs,
+        'GNN' : gnn_recs,
+        'JAC' : jac_recs
+        }
+
+    # Return Recommendations to Front End
+    return recs
