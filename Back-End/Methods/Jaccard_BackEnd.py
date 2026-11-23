@@ -273,11 +273,11 @@ def return_recs(games):
     knn_recs, sim_recs, imf_recs, gnn_recs, jac_recs = (recommendations(games))
     
     # Test if Top 10 Results are Being Returned Correctly
-    print("KNN:", knn_recs, 
-          "SIM:", sim_recs,
-          "IMF:", imf_recs,
-          "GNN:", gnn_recs,
-          "JAC:", jac_recs)
+    # print("KNN:", knn_recs, 
+    #       "SIM:", sim_recs,
+    #       "IMF:", imf_recs,
+    #       "GNN:", gnn_recs,
+    #       "JAC:", jac_recs)
 
     # Make a Dictionary of Recommendations
     recs = {
@@ -287,6 +287,8 @@ def return_recs(games):
         'GNN' : gnn_recs,
         'JAC' : jac_recs
         }
+
+    print("Loading Recommendations - Done")
 
     # Return Recommendations to Front End
     return recs

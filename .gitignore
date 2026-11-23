@@ -2,5 +2,6 @@
 *.jsonl
 desktop.ini
 
+*node_modules
 *.pkl
 *.pt

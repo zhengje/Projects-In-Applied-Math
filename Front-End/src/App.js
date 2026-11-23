@@ -23,6 +23,15 @@ function App() {
   const [selected, setSelected] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [backendData, setBackendData] = useState([]);
+  const [openModels, setOpenModels] = useState(false);
+
+
+
+  const [modelTag, setModelTag] = useState('');
+
+
+  // TODO: TEMP LOADER
+  const [isLoading, setIsLoading] = useState(false);
 
   const ref = useRef(null);
 
@@ -32,7 +41,6 @@ function App() {
     ).then(data => setData(data))
   }, []);
 const options = useMemo(() => filterData(data), [data]);
-console.log(options)
 
 // Multi-Select Search Bar for Names
 
@@ -79,11 +87,20 @@ console.log(options)
        }),
     });
 
+    
     const data = await response.json();
-    setBackendData(data)
-    console.log("Backend Data: ", data);
+    console.log(data);
+    setBackendData(data);
+    // console.log(KNN);
+    // console.log("Backend Data: ", data);
   } catch (error) {
     console.error("Error: ", error);
+  } finally {
+    setOpenModels(true);
+    setIsLoading(false);
+    // setKNN(backendData['returned_data']['KNN']);
+    
+   
   }
   }
 
@@ -115,6 +132,7 @@ console.log(options)
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onClick={() => setOpenModels(false)}
           placeholder="Search Games... (Click Outside to Close)"
           style = {{ width: 1440, backgroundColor: "#37414f", color: "#ffff", fontStyle: "italic", marginTop: "10px" }}
         />
@@ -139,17 +157,25 @@ console.log(options)
       )}
     </div>
 
-          {/* Button to Initiate Getting Reccomendations */}
+          {/* Button to Initiate Getting Recommendations */}
+
           <button className="searchBtn" onClick={() => {
+            setIsLoading(true);
             handleGetRecommendations()
             setHeader("Load Recommendations")
-          }}><span>Load Recommendations!</span></button>
+          }}><span>Load Recommendations</span></button>
+
+          {isLoading && (
+            <progress value={null} />
+          )}
+          
       </div>
       </div>
 
 
       {/* Modals to Display Recmmndations */}
-      <div className="main-box-1">
+      {openModels && (
+        <div className="main-box-1">
         <div className="box-title">
           View Recommendations
         </div>
@@ -157,49 +183,48 @@ console.log(options)
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendations()
+            setModelTag('KNN');
             setHeader("Recommendations for KNN Method")
-            console.log(backendData)
           }}><span>KNN Recommendations</span></button>
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendations()
+            setModelTag('SIM')
             setHeader("Recommendations for Matrix Similarities Method")
-            console.log(backendData)
           }}><span>Matrix Similarities Recommendations</span></button>
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendations()
+            setModelTag('IMF');
             setHeader("Recommendations for Implicit Matrix Method")
             console.log(backendData)
           }}><span>Implicit Matrix Recommendations</span></button>
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendations()
+            setModelTag('GNN')
             setHeader("Recommendations for GNN Method")
             console.log(backendData)
           }}><span>GNN Recommendations</span></button>
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendations()
+            setModelTag('JAC');
             setHeader("Recommendations for Jaccard Method")
             console.log(backendData)
           }}><span>Pairwise Jaccard Recommendations</span></button>
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
-            handleGetRecommendations()
+            // handleGetRecommendations()
             setHeader("Recommendations for Jaccard Method")
             console.log(backendData)
           }}><span>All Recommendations</span></button>
           
       </div>
     </div>
-    {openModal && <Modal closeModal={setOpenModal} data={backendData['returned_data']} header={header} />}
+      )}
+    {openModal && <Modal closeModal={setOpenModal} data={backendData.returned_data[modelTag]} header={header} />}
   </div>
   );
 }
