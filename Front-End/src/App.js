@@ -14,7 +14,7 @@ function filterData(data) {
   return filtered_names;
 }
 
-// Pull Recommendations from Backend
+
 function App() {
   const [header, setHeader] = useState("");
   const [data, setData] = useState([])
@@ -30,11 +30,12 @@ function App() {
   const [modelTag, setModelTag] = useState('');
 
 
-  // TODO: TEMP LOADER
+// Loading Bar
   const [isLoading, setIsLoading] = useState(false);
 
   const ref = useRef(null);
 
+// Pull Recommendations from Backend
   useEffect(() => {
     fetch("/game_names").then(
       res => res.json()
@@ -74,7 +75,7 @@ const options = useMemo(() => filterData(data), [data]);
     setSelected((prev) => prev.filter((i) => i !== item));
   };
 
-  // Get Reccomendations from Backend
+  // Get Recommendations from Backend
   const handleGetRecommendations = async() => {
   try {
     const response = await fetch("/game_recs", {
@@ -91,16 +92,13 @@ const options = useMemo(() => filterData(data), [data]);
     const data = await response.json();
     console.log(data);
     setBackendData(data);
-    // console.log(KNN);
-    // console.log("Backend Data: ", data);
+
   } catch (error) {
     console.error("Error: ", error);
   } finally {
     setOpenModels(true);
     setIsLoading(false);
-    // setKNN(backendData['returned_data']['KNN']);
-    
-   
+
   }
   }
 
@@ -157,8 +155,7 @@ const options = useMemo(() => filterData(data), [data]);
       )}
     </div>
 
-          {/* Button to Initiate Getting Recommendations */}
-
+    {/* Button to Initiate Getting Recommendations */}
           <button className="searchBtn" onClick={() => {
             setIsLoading(true);
             handleGetRecommendations()
@@ -197,33 +194,40 @@ const options = useMemo(() => filterData(data), [data]);
             setOpenModal(true)
             setModelTag('IMF');
             setHeader("Recommendations for Implicit Matrix Method")
-            console.log(backendData)
           }}><span>Implicit Matrix Recommendations</span></button>
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
             setModelTag('GNN')
             setHeader("Recommendations for GNN Method")
-            console.log(backendData)
           }}><span>GNN Recommendations</span></button>
 
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
             setModelTag('JAC');
             setHeader("Recommendations for Jaccard Method")
-            console.log(backendData)
           }}><span>Pairwise Jaccard Recommendations</span></button>
-
-          <button className="openModalBtn" onClick={() => {
-            setOpenModal(true)
-            // handleGetRecommendations()
-            setHeader("Recommendations for Jaccard Method")
-            console.log(backendData)
-          }}><span>All Recommendations</span></button>
           
       </div>
     </div>
       )}
+    
+    {/* Table Display for Recommendation Summary */}
+      <div className="main-box-1">
+        <div className="box-title">
+          Recommendation Summary
+        </div>
+
+        <div className="box-content">
+          
+          <button className="openModalBtn" onClick={() => {
+            setOpenModal(true)
+            setHeader("Recommendations for Jaccard Method")
+          }}><span>All Recommendations</span></button>
+
+        </div>
+      </div>
+
     {openModal && <Modal closeModal={setOpenModal} data={backendData.returned_data[modelTag]} header={header} />}
   </div>
   );

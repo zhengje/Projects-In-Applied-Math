@@ -4,7 +4,6 @@ Demo: python Combined4Models.py --demo
 Optional held-out predictions: python Combined4Models.py --test-cases test_cases.json
 GNN adapter contract is documented in run_gnn. No GNN is fabricated.
 """
-
 import argparse
 import importlib
 import json
@@ -190,27 +189,13 @@ def evaluate(test_cases, candidate_limit=100, top_k=10, rrf_k=60):
 
 
 # ============================================================
-# 3. GNN INTEGRATION - ADAPT TO THE EXISTING GNN FILE
+# 3. GNN INTEGRATION - CALL THE EXISTING GNN FILE
 # ============================================================
 def run_gnn(input_games, subjective_path, objective_path, top_n):
-    """Proposed external interface; teammate must implement or adapt it.
-    Return a ranked list of titles or dictionaries with a title field.
-    Train/load the GNN inside its own module, not here.
-    """
-    try:
-        module = importlib.import_module("FinalGNNMethod")
-    except ModuleNotFoundError as exc:
-        if exc.name != "FinalGNNMethod":
-            raise
-        raise RuntimeError("Add FinalGNNMethod.py beside this script.") from exc
-    if not hasattr(module, "recommend_games_gnn"):
-        raise RuntimeError("Adapt run_gnn to your GNN module's actual function.")
-    return module.recommend_games_gnn(
-        game_names=input_games,
-        subjective_path=subjective_path,
-        objective_path=objective_path,
-        top_n=top_n,
-    )
+    # Call the existing GNN directly so it returns up to 100 candidates.
+    # The GNN loads its own CSV files and saved model from the working folder.
+    module = importlib.import_module("FinalGNNMethod")
+    return module.get_recommendations(input_games, top_k=top_n)
 
 
 # =============================================================================
