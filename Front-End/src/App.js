@@ -1,5 +1,5 @@
 import './App.css';
-import Modal from './Components/modal';
+import Modal from './Components/Modal/modal';
 import Table from './Components/Table/table';
 import {useEffect, useMemo, useRef, useState} from "react";
 
@@ -116,7 +116,7 @@ const options = useMemo(() => filterData(data), [data]);
         <div className="box-content">
 
     {/* Multi-Select Box for Game Names*/}
-    <div ref={ref} style={{ width: 1470 }}>
+    <div ref={ref} style={{ width: 1000 }}>
       <div
         style={{ border: "1px solid black", padding: 8 }}
         onClick={() => setIsOpen(true)}
@@ -133,7 +133,7 @@ const options = useMemo(() => filterData(data), [data]);
           onChange={(e) => setQuery(e.target.value)}
           onClick={() => setOpenModels(false)}
           placeholder="Search Games... (Click Outside to Close)"
-          style = {{ width: 1440, backgroundColor: "#37414f", color: "#ffff", fontStyle: "italic", marginTop: "10px" }}
+          style = {{ width: 970, backgroundColor: "#37414f", color: "#ffff", fontStyle: "italic", marginTop: "10px" }}
         />
       </div>
 
@@ -164,14 +164,14 @@ const options = useMemo(() => filterData(data), [data]);
           }}><span>Load Recommendations</span></button>
 
           {isLoading && (
-            <progress value={null} />
+            <progress id='loading' value={null} />
           )}
           
       </div>
       </div>
 
 
-      {/* Modals to Display Recmmndations */}
+      {/* Modals to Display Recommendations */}
       {openModels && (
         <div className="main-box-1">
         <div className="box-title">
@@ -211,20 +211,26 @@ const options = useMemo(() => filterData(data), [data]);
           
       </div>
     </div>
-      )}
+    )}
     
     {/* Table Display for Recommendation Summary */}
+    {openModels &&
       <div className="main-box-1">
         <div className="box-title">
           Recommendation Summary
         </div>
 
         <div className="box-content">
-          
-          <Table/>
-
+          <Table 
+          KNN={backendData.returned_data['KNN']['Titles']}
+          SIM={backendData.returned_data.SIM.Titles}
+          IMF={backendData.returned_data.IMF.Titles}
+          GNN={backendData.returned_data.GNN.Titles}
+          JAC={backendData.returned_data.JAC.Titles}
+          />
         </div>
       </div>
+    }
 
     {openModal && <Modal closeModal={setOpenModal} data={backendData.returned_data[modelTag]} header={header} />}
   </div>

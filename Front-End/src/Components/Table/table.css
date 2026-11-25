@@ -1,0 +1,55 @@
+/* Styling for Table */
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+table {
+    box-shadow: 1px 1px 1px #000;
+    border: 1px solid #000;
+    border-collapse: separate;
+    border-radius: 4px;
+    border-spacing: 0px;
+    color: #000;
+    font-family: Ubuntu;
+}
+
+
+thead {
+    border-color: inherit;
+    border-collapse: separate;
+}
+
+
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+    background-color: #cde4f1;
+}
+
+
+th {
+    background-color: #5dbef6;
+}
+
+
+th,
+td {
+    padding: 5px 10px;
+    text-align: left;
+    vertical-align: middle;
+    border-left: 1px solid #000;
+}
+
+
+td {
+    border-top: 1px solid #000;
+}
+
+
+thead:first-child tr:first-child th:first-child
+tbody:first-child tr:first-child td:first-child{
+    border-radius: 4px 0 0 0;
+}
+thead:last-child tr:last-child th:first-child
+tbody:last-child tr:last-child td:first-child {
+    border-radius: 0 0 0 4px;
+}

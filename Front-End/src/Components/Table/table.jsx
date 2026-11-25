@@ -1,4 +1,6 @@
-const Table = () => {
+import './table.css'
+
+const Table = ({KNN, SIM, IMF, GNN, JAC}) => {
 
     // Make Headers
     const headers = [
@@ -36,29 +38,49 @@ const Table = () => {
     ]
 
     // Set Backend Data
-    const data = [
-        {
-            ID: 1,
-            RANK: "1",
-            KNN: "Slime Rancher",
-            SIM: "Omori",
-            IMF: "Dead by Daylight",
-            GNN: "GTA 6",
-            JAC: "YTTD: Death by Majority"
-        },
-        {
-            ID: 2,
-            RANK: "2",
-            KNN: "Danganronpa: Trigger Happy Havoc",
-            SIM: "Detroit Become Human",
-            IMF: "IDV",
-            GNN: "Feather Land",
-            JAC: "Papa's Mocharia"
-        },
-    ];
+    const data = []
+    for (let i=0; i<10; i++){
+        const temp = {
+            ID: i+1,
+            RANK: String(i+1),
+            KNN: KNN[i],
+            SIM: SIM[i],
+            IMF: IMF[i],
+            GNN: GNN[i],
+            JAC: JAC[i]
+        }
+
+        console.log(temp)
+        data.push(temp)
+    }
+
+    console.log(data)
+
+    // temp data to test table formatting
+    // const data = [
+    //     {
+    //         ID: 1,
+    //         RANK: "1",
+    //         KNN: "Slime Rancher",
+    //         SIM: "Omori",
+    //         IMF: "Dead by Daylight",
+    //         GNN: "GTA 6",
+    //         JAC: "YTTD: Death by Majority"
+    //     },
+    //     {
+    //         ID: 2,
+    //         RANK: "2",
+    //         KNN: "Danganronpa: Trigger Happy Havoc",
+    //         SIM: "Detroit Become Human",
+    //         IMF: "IDV",
+    //         GNN: "Feather Land",
+    //         JAC: "Papa's Mocharia"
+    //     },
+    // ];
 
 
     return (
+        <div>
         <table>
             {/* Map Headers */}
             <thead>
@@ -86,6 +108,7 @@ const Table = () => {
                 ))}
             </tbody>
         </table>
+        </div>
     )
 }
 
