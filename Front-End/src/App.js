@@ -1,5 +1,6 @@
 import './App.css';
 import Modal from './Components/modal';
+import Table from './Components/Table/table';
 import {useEffect, useMemo, useRef, useState} from "react";
 
 // filter duplicates
@@ -220,10 +221,7 @@ const options = useMemo(() => filterData(data), [data]);
 
         <div className="box-content">
           
-          <button className="openModalBtn" onClick={() => {
-            setOpenModal(true)
-            setHeader("Recommendations for Jaccard Method")
-          }}><span>All Recommendations</span></button>
+          <Table/>
 
         </div>
       </div>
