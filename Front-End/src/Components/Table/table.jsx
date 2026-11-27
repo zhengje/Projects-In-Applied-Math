@@ -43,18 +43,18 @@ const Table = ({KNN, SIM, IMF, GNN, JAC}) => {
         const temp = {
             ID: i+1,
             RANK: String(i+1),
-            KNN: KNN[i],
-            SIM: SIM[i],
-            IMF: IMF[i],
-            GNN: GNN[i],
-            JAC: JAC[i]
+            KNN: KNN[i]['title'],
+            SIM: SIM[i]['title'],
+            IMF: IMF[i]['title'],
+            GNN: GNN[i]['title'],
+            JAC: JAC[i]['title']
         }
 
         console.log(temp)
         data.push(temp)
     }
 
-    console.log(data)
+    // console.log(data)
 
     // temp data to test table formatting
     // const data = [

@@ -27,7 +27,6 @@ function App() {
   const [openModels, setOpenModels] = useState(false);
 
 
-
   const [modelTag, setModelTag] = useState('');
 
 
@@ -91,7 +90,6 @@ const options = useMemo(() => filterData(data), [data]);
 
     
     const data = await response.json();
-    console.log(data);
     setBackendData(data);
     setOpenModels(true);
 
@@ -160,6 +158,7 @@ const options = useMemo(() => filterData(data), [data]);
             setIsLoading(true);
             handleGetRecommendations()
             setHeader("Load Recommendations")
+            
           }}><span>Load Recommendations</span></button>
 
           {isLoading && (
@@ -181,7 +180,8 @@ const options = useMemo(() => filterData(data), [data]);
           <button className="openModalBtn" onClick={() => {
             setOpenModal(true)
             setModelTag('KNN');
-            setHeader("Recommendations for KNN Method")
+            setHeader("Recommendations for KNN Method");
+            
           }}><span>KNN Recommendations</span></button>
 
           <button className="openModalBtn" onClick={() => {
@@ -221,11 +221,11 @@ const options = useMemo(() => filterData(data), [data]);
 
         <div className="box-content">
           <Table 
-          KNN={backendData.returned_data?.KNN?.Titles || []}
-          SIM={backendData.returned_data?.SIM?.Titles || []}
-          IMF={backendData.returned_data?.IMF?.Titles || []}
-          GNN={backendData.returned_data?.GNN?.Titles || []}
-          JAC={backendData.returned_data?.JAC?.Titles || []}
+          KNN={backendData.returned_data?.KNN || []}
+          SIM={backendData.returned_data?.SIM || []}
+          IMF={backendData.returned_data?.IMF || []}
+          GNN={backendData.returned_data?.GNN || []}
+          JAC={backendData.returned_data?.JAC || []}
           />
         </div>
       </div>
