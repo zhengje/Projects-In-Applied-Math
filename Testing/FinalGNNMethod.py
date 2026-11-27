@@ -101,7 +101,7 @@ def train_and_save_artifacts():
     )
 
     model.train()
-    epochs = 30
+    epochs = 100
     batch_size = 65536  # Process 65k interactions at a time
     num_edges = edge_index.size(1)
     
