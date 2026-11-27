@@ -1,4 +1,4 @@
-*.json
+# *.json
 *.jsonl
 desktop.ini
 
