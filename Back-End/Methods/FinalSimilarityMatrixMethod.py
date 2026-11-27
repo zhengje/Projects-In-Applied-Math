@@ -682,15 +682,15 @@ def recommend_games(
     # often describe Steam features rather than gameplay.
     # =========================================================================
 
-    w_tags = 0.40
-    w_genre = 0.18
+    w_tags = 0.00
+    w_genre = 0.25
     w_category = 0.05
-    w_filtered_tags = 0.12
+    w_filtered_tags = 0.40
 
-    w_rating = 0.12
-    w_positive_ratio = 0.07
-    w_user_reviews = 0.03
-    w_price = 0.03
+    w_rating = 0.08
+    w_positive_ratio = 0.08
+    w_user_reviews = 0.13
+    w_price = 0.01
 
     # =========================================================================
     # 14. COMPOSITE LINEAR SCORE

@@ -481,13 +481,13 @@ norm_price_inv = 1.0 - normalize(
 
 weights = [
     0.00,  # Tags
-    0.20,  # Genres
-    0.08,  # Categories
+    0.25,  # Genres
+    0.05,  # Categories
     0.40,  # Filtered Tags
     0.08,  # Rating
     0.08,  # Positive Ratio
     0.13,  # User Reviews
-    0.03   # Low Price
+    0.01   # Low Price
 ]
 
 assert np.isclose(
