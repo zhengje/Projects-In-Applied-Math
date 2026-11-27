@@ -259,11 +259,22 @@ def get_recommendations(input_game_names, top_k=10):
 # Example usage
 # if __name__ == "__main__":
 #     input_list = [
-#         "Dwarf Fortress",
-#         "Factorio",
-#         "RimWorld"
+#         "Slay the Spire",
+#         "Hades",
+#         "Into the Breach",
 #     ]
 #     get_recommendations(input_list, top_k=10)
+
+# [{'title': 'Battlefield™ V'}, 
+# {'title': 'Sea of Thieves 2023 Edition'}, 
+# {'title': 'Plague Inc: Evolved'}, 
+# {'title': 'People Playground'}, 
+# {'title': 'Among Us'}, 
+# {'title': 'Team Fortress 2'}, 
+# {'title': '鬼谷八荒 Tale of Immortal'}, 
+# {'title': 'World of Tanks Blitz'}, 
+# {'title': 'Outlast'}, 
+# {'title': 'The Witcher® 3: Wild Hunt'}]
 
 # FINAL HYBRID TOP 10
 #                                                Game  Fusion score  Models agreeing  KNN rank  CosineSimilarity rank  Implicit Matrix Factorization rank  GNN rank
@@ -278,3 +289,34 @@ def get_recommendations(input_game_names, top_k=10):
 # 8                                         Grim Dawn      0.009859                3         9                      3                                  18      <NA>
 # 9                                         ASTRONEER      0.009693                3        14                     13                                <NA>        17
 # 10                                    Monster Train      0.008791                3         2                      2                                  74      <NA>
+
+
+import matplotlib.pyplot as plt
+
+# 1. Load the pickle file
+with open("gnn_mappings.pkl", "rb") as f:
+    data = pickle.load(f)
+
+# 2. Extract the cost/loss sequence depending on how it was saved
+if isinstance(data, dict):
+    # Replace 'loss' with your actual key (e.g., 'cost', 'train_loss')
+    cost = data["avg_loss"]
+else:
+    # Assumes data is directly a list or 1D NumPy array
+    cost = data
+
+# 3. Plot the cost curve
+plt.figure(figsize=(8, 5))
+plt.plot(cost, label="Training Cost", linewidth=2)
+
+# Optional: plot validation cost if stored in the same dict
+if isinstance(data, dict) and "val_loss" in data:
+    plt.plot(data["val_loss"], label="Validation Cost", linewidth=2)
+
+plt.title("Cost Function over Epochs / Iterations")
+plt.xlabel("Epoch / Iteration")
+plt.ylabel("Cost (Loss)")
+plt.grid(True, linestyle="--", alpha=0.6)
+plt.legend()
+plt.tight_layout()
+plt.show()

@@ -369,6 +369,30 @@ if __name__ == "__main__":
 #Recall@10: On average, 0.30 of the hidden games were successfully recommended in the top 10 across all users.
 #NormalizedDiscountedCumulativeGain@10: Measures ranking quality, with 1.0 being perfect ranking. Higher values mean the matched games appeared closer to Rank #1.
 
+
+# 4x4 JACCARD OVERLAP MATRIX
+#                                   KNN  CosineSimilarity  Implicit Matrix Factorization     GNN
+# KNN                            1.0000            0.6260                         0.1236  0.0471
+# CosineSimilarity               0.6260            1.0000                         0.1364  0.0582
+# Implicit Matrix Factorization  0.1236            0.1364                         1.0000  0.1236
+# GNN                            0.0471            0.0582                         0.1236  1.0000
+
+# MODEL WEIGHTS: {'KNN': np.float64(0.2106), 'CosineSimilarity': np.float64(0.2079), 'Implicit Matrix Factorization': np.float64(0.2735), 'GNN': np.float64(0.308)}
+
+# FINAL HYBRID TOP 10
+#                                                Game  Fusion score  Models agreeing  KNN rank  CosineSimilarity rank  Implicit Matrix Factorization rank  GNN rank
+# Rank                                                                                                                                                             
+# 1                         The Witcher® 3: Wild Hunt      0.014374                4        21                      9                                   1        12
+# 2     Divinity: Original Sin 2 - Definitive Edition      0.012638                4        68                     28                                   9         6
+# 3                                        Dead Cells      0.011009                4        63                     47                                   4        40
+# 4                                 Vampire Survivors      0.010754                3         7                      5                                   2      <NA>
+# 5                                       Inscryption      0.010061                3        10                     10                                   7      <NA>
+# 6                     The Binding of Isaac: Rebirth      0.010002                3         4                      4                                  19      <NA>
+# 7                            FTL: Faster Than Light      0.009867                3         1                      1                                  31      <NA>
+# 8                                         Grim Dawn      0.009859                3         9                      3                                  18      <NA>
+# 9                                         ASTRONEER      0.009693                3        14                     13                                <NA>        17
+# 10                                    Monster Train      0.008791                3         2                      2                                  74      <NA>
+
 # ================================================================================
 # 80/20 BENCHMARK: JACCARD HYBRID RRF VS. INDIVIDUAL MODELS
 # ================================================================================

@@ -6,6 +6,8 @@ import FinalGNNMethod as gnn_script
 from scipy.sparse import csr_matrix
 import numpy as np
 import pandas as pd
+import gc
+import torch
 
 # =============================================================================
 # 1. LOAD DATASETS
@@ -14,8 +16,8 @@ import pandas as pd
 dataset = pd.read_csv("Data_Objective.csv")
 print(f"Fixed metadata dataset loaded: {len(dataset)} games")
 
-subjective_df = pd.read_csv("Data_Subjective.csv")
-print(f"Subjective interaction dataset loaded: {len(subjective_df)} records")
+#subjective_df = pd.read_csv("Data_Subjective.csv")
+#print(f"Subjective interaction dataset loaded: {len(subjective_df)} records")
 
 
 CANDIDATES_PER_MODEL = 100
@@ -37,7 +39,8 @@ _, knn_results = knn_script.recommend_games_knn(input_games, dataset, top_n=N_RE
 # -----------------------------------------------------------------------------
 # Already returns dictionaries matching [{'title': 'Name', ...}] out-of-the-box
 _, sim_results = sim_script.recommend_games(input_games, dataset, top_n=N_RECS)
-
+del dataset
+gc.collect()
 # -----------------------------------------------------------------------------
 # MODEL 3: Implicit Matrix Factorization Multi
 # -----------------------------------------------------------------------------
@@ -86,11 +89,14 @@ for idx in ids:
     if rec_title:
         implicit_results.append({'title': rec_title})
 
+del model, app_index_map, app_id_to_index_map, game_title, title_to_app_id_map, user_items
+gc.collect()
 # -----------------------------------------------------------------------------
 # MODEL 4: Graph Neural Network (3-Hop Bipartite GNN)
 # -----------------------------------------------------------------------------
-gnn_results = gnn_script.get_recommendations(input_games, top_k=N_RECS)
 
+with torch.inference_mode():
+    gnn_results = gnn_script.get_recommendations(input_games, top_k=N_RECS)
 
 # Confirm matrix harvest array counts match expectations before pipeline merging
 print(f"Successfully gathered list arrays:")
