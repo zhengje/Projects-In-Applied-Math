@@ -5,3 +5,5 @@
 implicit_mf_model.pkl filter=lfs diff=lfs merge=lfs -text
 Back-End/Methods/gnn_mappings.pkl filter=lfs diff=lfs merge=lfs -text
 Back-End/Methods/gnn_recommender.pt filter=lfs diff=lfs merge=lfs -text
+Testing/gnn_mappings.pkl filter=lfs diff=lfs merge=lfs -text
+Testing/gnn_recommender.pt filter=lfs diff=lfs merge=lfs -text
