@@ -4,7 +4,7 @@ import FinalKNNMethod as KNN
 # import FinalSimilarityMatrixMethod as SM
 # import FinalIMFMethod as IMF
 # import FinalGNNMethod as GNN
-import Jaccard_BackEnd as JAC
+import FinalJaccardMethod as JAC
 app = Flask(__name__)
 
 

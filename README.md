@@ -2,11 +2,11 @@
 
 ## How to run:
 
-** Dataset and libraries are extrememly large so a storage size of about 30GB is requried **
+**Disclaimer**: Dataset and libraries are extrememly large so a storage size of about **30GB** is requried
 
-## Backend:
+## Backend (First Time Use):
 ```console
-cd Back-End/Methods/ 
+cd Back-End\Methods\ 
 python -m venv venv
 ```
 
@@ -21,24 +21,37 @@ py -3.xx -m venv venv
 pip install -r requirements.txt
 ```
 
-**Then Run server** 
+**Run Server** 
 ```console
 py server.py
 ```
 
 
-## Frontend:
-Open a new second terminal
+## Frontend (First Time Use):
+**Open a Second Terminal**
 
 ```console
 cd Front-End/
 npm install
-```
-
-(If theres an error because of a missing package.json you might need to request it from one of the members)
-```console
 npm start
 ```
 
 
-# How to use recommender
+# Game Recommender Usage Instructions
+
+1. Click search bar to open list of available games (inputs)
+    - Type in the search bar to filter games by name, *and/or*
+    - Scroll through the dropdown menu to find games, *and*
+    - Select games by clicking on each title.
+
+2. Click outside the dropdown to close the menu
+
+3. Click the "Load Recommendations" button to get recommendations
+
+4. Wait for loading bar to indicate completion (disappear)
+
+5. View results:
+    - Interact with each modal to see a curated list of 10 games (sorted by method)
+    - View summary table with the recommendations of each model
+
+*Note*: Modals can be opened by clicking on the buttons with each model labelled on it. Modals can be closed by clicking the red exit button on the top right of the display. 
