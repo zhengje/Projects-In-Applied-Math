@@ -170,7 +170,6 @@ def similar_games_multi(game_names, model, app_id_to_index_map, app_index_map, g
 def return_recs_IMF(games):
     model, user_app_matrix, user_id_to_index_map, app_index_map, app_id_to_index_map, game_title, title_to_app_id_map = implicit_mf()
 
-    # Pass a list of multiple App IDs (e.g., Dwarf Fortress + Factorio + RimWorld)
     # input_games = ["Omori", "Resident Evil"]
 
     return similar_games_multi(

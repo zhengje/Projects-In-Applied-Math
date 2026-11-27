@@ -183,3 +183,18 @@ print(overlap.round(4).to_string())
 print('\nMODEL WEIGHTS:', {k: round(v, 4) for k, v in weights.items()})
 print('\nFINAL HYBRID TOP 10')
 print(ranking.to_string(float_format=lambda x: f'{x:6f}'))
+
+
+# FINAL HYBRID TOP 10
+#                                                Game  Fusion score  Models agreeing  KNN rank  CosineSimilarity rank  Implicit Matrix Factorization rank  GNN rank
+# Rank                                                                                                                                                             
+# 1                         The Witcher® 3: Wild Hunt      0.014374                4        21                      9                                   1        12
+# 2     Divinity: Original Sin 2 - Definitive Edition      0.012638                4        68                     28                                   9         6
+# 3                                        Dead Cells      0.011009                4        63                     47                                   4        40
+# 4                                 Vampire Survivors      0.010754                3         7                      5                                   2      <NA>
+# 5                                       Inscryption      0.010061                3        10                     10                                   7      <NA>
+# 6                     The Binding of Isaac: Rebirth      0.010002                3         4                      4                                  19      <NA>
+# 7                            FTL: Faster Than Light      0.009867                3         1                      1                                  31      <NA>
+# 8                                         Grim Dawn      0.009859                3         9                      3                                  18      <NA>
+# 9                                         ASTRONEER      0.009693                3        14                     13                                <NA>        17
+# 10                                    Monster Train      0.008791                3         2                      2                                  74      <NA>
